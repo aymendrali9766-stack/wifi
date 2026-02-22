@@ -1,0 +1,14 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsUpdate\UpdatePolicy\Settings]
+"PausedFeatureStatus"=dword:00000000
+"PausedQualityStatus"=dword:00000000
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings]
+"FlightSettingsMaxPauseDays"=dword:00000e42
+"PauseFeatureUpdatesStartTime"="2023-11-06T14:03:37Z"
+"PauseFeatureUpdatesEndTime"="3000-11-06T14:03:37Z"
+"PauseQualityUpdatesStartTime"="2023-11-06T14:03:37Z"
+"PauseQualityUpdatesEndTime"="3000-11-06T14:03:37Z"
+"PauseUpdatesStartTime"="2023-11-06T14:03:37Z"
+"PauseUpdatesExpiryTime"="3000-11-06T14:03:37Z"
