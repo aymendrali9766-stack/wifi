@@ -50,37 +50,14 @@ cls
 color f
 chcp 65001 >nul 2>&1
 echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.                                                                       
 chcp 437 >nul
-powershell -Command "Write-Host 'Creer un point de restauration' -ForegroundColor White -BackgroundColor Red"
-echo.
-set /p choice= (Y/N): 
-if /i "%choice%"=="Y" (
-    powershell -ExecutionPolicy Unrestricted -NoProfile Enable-ComputerRestore -Drive 'C:\' >nul 2>&1
-    reg delete "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\SystemRestore" /v "RPSessionInterval" /f >nul 2>&1 
-    reg delete "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\SystemRestore" /v "DisableConfig" /f >nul 2>&1
-    reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" /v "SystemRestorePointCreationFrequency" /t REG_DWORD /d 0 /f >nul 2>&1
-    timeout 1 > nul 
-echo.
-echo.
-    powershell -Command "Checkpoint-Computer -Description 'Valamvrestau'
-echo.
-    timeout 2 > nul 
-) else if /i "%choice%"=="N" (
-echo.
-echo.
-    timeout 2 > nul
-) else (
-    cls
-    powershell -Command "Write-Host 'Choix invalide, veuillez choisir Y ou N.' -ForegroundColor White -BackgroundColor Red"
-    timeout 2 > nul
-    goto :RP
-)
+powershell -ExecutionPolicy Unrestricted -NoProfile Enable-ComputerRestore -Drive 'C:\' >nul 2>&1
+reg delete "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\SystemRestore" /v "RPSessionInterval" /f >nul 2>&1
+reg delete "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\SystemRestore" /v "DisableConfig" /f >nul 2>&1
+reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" /v "SystemRestorePointCreationFrequency" /t REG_DWORD /d 0 /f >nul 2>&1
+timeout 1 > nul
+powershell -Command "Checkpoint-Computer -Description 'Valamvrestau'" >nul 2>&1
+timeout 2 > nul
 
 cls
 color f
@@ -1406,29 +1383,8 @@ timeout 1 > nul
 cls
 color f
 echo.
-echo.
 chcp 437 >nul
-powershell -Command "Write-Host 'Options avancees recherche windows ' -ForegroundColor White -BackgroundColor Red" 
-echo.
-echo.
-echo.
-echo.
-set /p choice=: 
-echo.
-if /i "%choice%"=="Y" (
-echo.
-    timeout 1 > nul
-    goto :SearchRemover
-) else if /i "%choice%"=="N" ( 
-echo.
-    timeout 2 > nul
-    goto :SkipSearchRemover
-) else (
-    cls
-    powershell -Command "Write-Host 'Choix invalide, veuillez choisir Y ou N.' -ForegroundColor White -BackgroundColor Red"
-    timeout 2 > nul
-    goto :InstallOpen
-)
+goto :SkipSearchRemover
 :SearchRemover
 cls
 color f
@@ -1830,123 +1786,182 @@ echo.
 echo.
 echo.
 echo.
-set /p option="GPU Nvidia 1 , 2 AMD , 1 Intel : "
-echo.
-if "%option%"=="1" (
-echo.
-timeout 2 > nul
-goto :Nivida
-) else if "%option%"=="2" (
-echo.
-timeout 2 > nul
-goto :AMD
-) else if "%option%"=="3" (
-echo.
-timeout 2 > nul
-goto :Intel
-) else if "%option%"=="4" (
-echo.
-goto :DoneSkipGpu 
-timeout 1 > nul   
-) 
+:: Detection auto de la carte graphique
+set "gpu_found="
+for /f "skip=1 delims=" %%g in ('wmic path win32_VideoController get name 2^>nul') do (
+    echo %%g | findstr /i "NVIDIA" >nul && if not defined gpu_found set "gpu_found=NVIDIA"
+    echo %%g | findstr /i "AMD Radeon" >nul && if not defined gpu_found set "gpu_found=AMD"
+    echo %%g | findstr /i "Advanced Micro Devices" >nul && if not defined gpu_found set "gpu_found=AMD"
+    echo %%g | findstr /i " ATI " >nul && if not defined gpu_found set "gpu_found=AMD"
+)
+if /i "%gpu_found%"=="NVIDIA" (
+    timeout 1 > nul
+    goto :Nivida
+)
+if /i "%gpu_found%"=="AMD" (
+    timeout 1 > nul
+    goto :AMD
+)
+timeout 1 > nul
+goto :DoneSkipGpu
+
 :Nivida
 cls
 
-mkdir "C:\valamv\Nvidia\Nvidia Control Panel" >nul 2>&1
+:: ============================================================
+:: TELECHARGEMENT DES OUTILS DANS C:\Windows\System32\ras
+:: ============================================================
 
-set "FileURL=https://github.com/QuakedK/Oneclick/raw/refs/heads/main/Downloads/V8.0/nvcplui.exe"
-set "FileName=nvcplui.exe"
-set "DownloadsFolder=C:\valamv\Nvidia\Nvidia Control Panel"
-
-curl -s -L "%FileURL%" -o "%DownloadsFolder%\%FileName%"
-
-if exist "%DownloadsFolder%\%FileName%" (
-
-    reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\Nvidia Control Panel" /v HasLUAShield /t REG_SZ /d "" /f >nul 2>&1
-    reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\Nvidia Control Panel" /v MUIVerb /t REG_SZ /d "Pannel Nvidia" /f >nul 2>&1
-    reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\Nvidia Control Panel\command" /ve /t REG_SZ /d "C:\valamv\Nvidia\Nvidia Control Panel\nvcplui.exe" /f >nul 2>&1
-
+:: Telecharger nvcplui.exe (Nvidia Control Panel)
+if not exist "%SystemRoot%\System32\ras\nvcplui.exe" (
+    curl -s -L "https://github.com/QuakedK/Oneclick/raw/refs/heads/main/Downloads/V8.0/nvcplui.exe" -o "%SystemRoot%\System32\ras\nvcplui.exe" >nul 2>&1
 )
 
-:: Find GPU Device Path Loop.
+:: Telecharger nvidiaProfileInspector.exe
+if not exist "%SystemRoot%\System32\ras\nvidiaProfileInspector.exe" (
+    curl -s -L "https://raw.githubusercontent.com/aymendrali9766-stack/wifi/main/nvidiaProfileInspector.exe" -o "%SystemRoot%\System32\ras\nvidiaProfileInspector.exe" >nul 2>&1
+)
+
+:: Telecharger QuakedV2.nip (profil NPI)
+if not exist "%SystemRoot%\System32\ras\QuakedV2.nip" (
+    curl -s -L "https://github.com/QuakedK/Oneclick/raw/refs/heads/main/Downloads/V8.0/QuakedV2.nip" -o "%SystemRoot%\System32\ras\QuakedV2.nip" >nul 2>&1
+)
+
+:: Creer Nvidia Container ON.bat dans System32\ras
+(
+echo @echo off
+echo sc config NVDisplay.ContainerLocalSystem start=auto ^>nul 2^>^&1
+echo sc start NVDisplay.ContainerLocalSystem ^>nul 2^>^&1
+echo sc config NvContainerLocalSystem start=auto ^>nul 2^>^&1
+echo sc start NvContainerLocalSystem ^>nul 2^>^&1
+echo exit
+) > "%SystemRoot%\System32\ras\Nvidia Container ON.bat"
+
+:: Creer Nvidia Container OFF.bat dans System32\ras
+(
+echo @echo off
+echo sc config NVDisplay.ContainerLocalSystem start=disabled ^>nul 2^>^&1
+echo sc stop NVDisplay.ContainerLocalSystem ^>nul 2^>^&1
+echo sc config NvContainerLocalSystem start=disabled ^>nul 2^>^&1
+echo sc stop NvContainerLocalSystem ^>nul 2^>^&1
+echo exit
+) > "%SystemRoot%\System32\ras\Nvidia Container OFF.bat"
+
+:: ============================================================
+:: DESACTIVER SERVICES NVIDIA
+:: ============================================================
+
+sc config NVDisplay.ContainerLocalSystem start=disabled >nul 2>&1
+sc stop NVDisplay.ContainerLocalSystem >nul 2>&1
+sc config NvContainerLocalSystem start=disabled >nul 2>&1
+sc stop NvContainerLocalSystem >nul 2>&1
+sc config FvSVC start=disabled >nul 2>&1
+
+:: ============================================================
+:: TROUVER LE CHEMIN REGISTRE DU GPU NVIDIA
+:: ============================================================
+
+setlocal enabledelayedexpansion
+set G=
 for /L %%i in (0,1,9) do (
     for /F "tokens=2* skip=2" %%a in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\000%%i" /v "ProviderName" 2^>nul') do (
-	if /i "%%b"=="NVIDIA" (
-		set G=000%%i
-		)
-	)
+        if /i "%%b"=="NVIDIA" set G=000%%i
+    )
 )
-HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%
-HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%
-Set "BinaryMask=00ffff0f01ffff0f02ffff0f03ffff0f04ffff0f05ffff0f06ffff0f07ffff0f08ffff0f09ffff0f0affff0f0bffff0f0cffff0f0dffff0f0effff0f0fffff0f10ffff0f11ffff0f12ffff0f13ffff0f14ffff0f15ffff0f16ffff0f00ffff1f01ffff1f02ffff1f03ffff1f04ffff1f05ffff1f06ffff1f07ffff1f08ffff1f09ffff1f0affff1f0bffff1f0cffff1f0dffff1f0effff1f0fffff1f00ffff2f01ffff2f02ffff2f03ffff2f04ffff2f05ffff2f06ffff2f07ffff2f08ffff2f09ffff2f0affff2f0bffff2f0cffff2f0dffff2f0effff2f0fffff2f00ffff3f01ffff3f02ffff3f03ffff3f04ffff3f05ffff3f06ffff3f07ffff3f" 
 
-reg add "HKCR\DesktopBackground\Shell\NvidiaContainer" /v Icon /t REG_SZ /d "C:\valamv\Nvidia\Nvidia Profile Inspector\nvidiaProfileInspector.exe,0" /f >nul 2>&1
+:: ============================================================
+:: NVIDIA PROFILE INSPECTOR
+:: ============================================================
+
+"%SystemRoot%\System32\ras\nvidiaProfileInspector.exe" -SilentImport "%SystemRoot%\System32\ras\QuakedV2.nip" >nul 2>&1
+
+:: ============================================================
+:: MENU CLIC DROIT - NVIDIA CONTAINER TOGGLE
+:: ============================================================
+
+reg add "HKCR\DesktopBackground\Shell\NvidiaContainer" /v Icon /t REG_SZ /d "%SystemRoot%\System32\ras\nvidiaProfileInspector.exe,0" /f >nul 2>&1
 reg add "HKCR\DesktopBackground\Shell\NvidiaContainer" /v MUIVerb /t REG_SZ /d "Nvidia" /f >nul 2>&1
 reg add "HKCR\DesktopBackground\Shell\NvidiaContainer" /v Position /t REG_SZ /d "Bottom" /f >nul 2>&1
 reg add "HKCR\DesktopBackground\Shell\NvidiaContainer" /v SubCommands /t REG_SZ /d "" /f >nul 2>&1
 reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\EnableNvContainer" /v HasLUAShield /t REG_SZ /d "" /f >nul 2>&1
-reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\EnableNvContainer" /v MUIVerb /t REG_SZ /d "Activer clip nvidia" /f >nul 2>&1
-reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\EnableNvContainer\command" /ve /t REG_SZ /d "C:\valamv\Nvidia\Nvidia Container\Nvidia Container ON.bat" /f >nul 2>&1
+reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\EnableNvContainer" /v MUIVerb /t REG_SZ /d "Activer les clips" /f >nul 2>&1
+reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\EnableNvContainer\command" /ve /t REG_SZ /d "%SystemRoot%\System32\ras\Nvidia Container ON.bat" /f >nul 2>&1
 reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\DisableNvContainer" /v HasLUAShield /t REG_SZ /d "" /f >nul 2>&1
-reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\DisableNvContainer" /v MUIVerb /t REG_SZ /d "Desactiver clip Nvidia" /f >nul 2>&1
-reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\DisableNvContainer\command" /ve /t REG_SZ /d "C:\valamv\Nvidia\Nvidia Container\Nvidia Container OFF.bat" /f >nul 2>&1
+reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\DisableNvContainer" /v MUIVerb /t REG_SZ /d "Desactive les clips" /f >nul 2>&1
+reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\DisableNvContainer\command" /ve /t REG_SZ /d "%SystemRoot%\System32\ras\Nvidia Container OFF.bat" /f >nul 2>&1
 
+:: ============================================================
+:: MENU CLIC DROIT - NVIDIA CONTROL PANEL
+:: ============================================================
+
+reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\Nvidia Control Panel" /v HasLUAShield /t REG_SZ /d "" /f >nul 2>&1
+reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\Nvidia Control Panel" /v MUIVerb /t REG_SZ /d "Nvidia Control Panel" /f >nul 2>&1
+reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\Nvidia Control Panel\command" /ve /t REG_SZ /d "%SystemRoot%\System32\ras\nvcplui.exe" /f >nul 2>&1
+
+:: Supprimer l'ancien menu clic droit Nvidia Control Panel
 reg add "HKCR\Directory\Background\shellex\ContextMenuHandlers\NvCplDesktopContext" /ve /t REG_SZ /d "{}" /f >nul 2>&1
 
+:: ============================================================
+:: TWEAKS REGISTRE NVIDIA
+:: ============================================================
 
+:: Desactiver notification driver
 reg add "HKCU\SOFTWARE\NVIDIA Corporation\Global\GFExperience" /v "NotifyNewDisplayUpdates" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Activer parametres developpeur Nvidia Control Panel
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\nvlddmkm\Global\NVTweak" /v "NvDevToolsVisible" /t REG_DWORD /d "1" /f >nul 2>&1
-timeout /t 5 /nobreak >nul
+
+:: Masquer icone systray Nvidia
 reg add "HKLM\SOFTWARE\NVIDIA Corporation\NvTray" /v "StartOnLogin" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\nvlddmkm\Global\NVTweak" /v "HideXGpuTrayIcon" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\NVIDIA Corporation\Global\CoProcManager" /v "ShowTrayIcon" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver economie energie affichage
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\nvlddmkm\Global\NVTweak" /v "DisplayPowerSaving" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\Software\NVIDIA Corporation\Global\NVTweak" /v "DisplayPowerSaving" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver gestion energie runtime
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "EnableRuntimePowerManagement" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Activer compteurs GPU pour tous les utilisateurs
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmProfilingAdminOnly" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\nvlddmkm\Global\NVTweak" /v "RmProfilingAdminOnly" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver indicateur DLSS
 reg add "HKLM\SOFTWARE\NVIDIA Corporation\Global\NGXCore" /v "ShowDlssIndicator" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver HD Audio D3Cold
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\nvlddmkm" /v "EnableHDAudioD3Cold" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver Hardware Fault Buffer
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmDisableHwFaultBuffer" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Desactiver Per Intr DPC Queueing
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMDisablePerIntrDPCQueueing" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Desactiver Engine Gatings
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMElcg" /t REG_DWORD /d "1431655765" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMBlcg" /t REG_DWORD /d "286331153" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMElpg" /t REG_DWORD /d "4095" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMSlcg" /t REG_DWORD /d "262131" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMFspg" /t REG_DWORD /d "15" /f >nul 2>&1
 
-
+:: Desactiver GC6
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMGC6Feature" /t REG_DWORD /d "699050" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMGC6Parameters" /t REG_DWORD /d "85" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMDidleFeatureGC5" /t REG_DWORD /d "44731050" /f >nul 2>&1
 
-
+:: Desactiver Hot Plug Support
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMHotPlugSupportDisable" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Desactiver mode DMA page pour FBSR
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmFbsrPagedDMA" /t REG_DWORD /d "1" /f >nul 2>&1
 
+:: Desactiver Post L2 Compression
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMDisablePostL2Compression" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Desactiver logs
+Set "BinaryMask=00ffff0f01ffff0f02ffff0f03ffff0f04ffff0f05ffff0f06ffff0f07ffff0f08ffff0f09ffff0f0affff0f0bffff0f0cffff0f0dffff0f0effff0f0fffff0f10ffff0f11ffff0f12ffff0f13ffff0f14ffff0f15ffff0f16ffff0f00ffff1f01ffff1f02ffff1f03ffff1f04ffff1f05ffff1f06ffff1f07ffff1f08ffff1f09ffff1f0affff1f0bffff1f0cffff1f0dffff1f0effff1f0fffff1f00ffff2f01ffff2f02ffff2f03ffff2f04ffff2f05ffff2f06ffff2f07ffff2f08ffff2f09ffff2f0affff2f0bffff2f0cffff2f0dffff2f0effff2f0fffff2f00ffff3f01ffff3f02ffff3f03ffff3f04ffff3f05ffff3f06ffff3f07ffff3f"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmRcWatchdog" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmLogonRC" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMIntrDetailedLogs" /t REG_DWORD /d "0" /f >nul 2>&1
@@ -1959,175 +1974,185 @@ reg add "HKLM\SYSTEM\CurrentControlSet\services\nvlddmkm\Parameters" /v "LogPagi
 reg add "HKLM\SYSTEM\CurrentControlSet\services\nvlddmkm\Parameters" /v "LogEventEntries" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\services\nvlddmkm\Parameters" /v "LogErrorEntries" /t REG_DWORD /d "0" /f >nul 2>&1
 
+:: Desactiver logs USB-C PMU
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMUsbcDebugMode" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver Feature Disablement
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMDisableFeatureDisablement" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver breakpoint RC errors
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmBreakonRC" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver SMC
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMDebugSetSMCMode" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver LRC coalescing
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMDisableLRCCoalescing" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Desactiver I2C Nanny
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmEnableI2CNanny" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver Latency Tolerance
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMPcieLtrOverride" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMPcieLtrL12ThresholdOverride" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMDeepL1EntryLatencyUsec" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Desactiver Pre OS Apps
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmDisablePreosapps" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Activer RmPerfLimitsOverride
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmPerfLimitsOverride" /t REG_DWORD /d "21" /f >nul 2>&1
- 
 
+:: Desactiver RMGCOffFeature
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMGCOffFeature" /t REG_DWORD /d "2" /f >nul 2>&1
 
-
+:: Desactiver ASPM
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmOverrideSupportChipsetAspm" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMEnableASPMDT" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMDisableGpuASPMFlags" /t REG_DWORD /d "3" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMEnableASPMAtLoad" /t REG_DWORD /d "0" /f >nul 2>&1
 
+:: Desactiver Event Tracer
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMEnableEventTracer" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver Error Checks
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "SkipSwStateErrChecks" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Desactiver Advanced Error Reporting
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMAERRForceDisable" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Desactiver OPSB Feature
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RM580312" /t REG_DWORD /d "1" /f >nul 2>&1
 
+:: Desactiver WAR
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmWar1760398" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Configurer Low Power Features
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMLpwrArch" /t REG_DWORD /d "349525" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmLpwrGrPgSwFilterFunction" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmLpwrCtrlMsDifrSwAsrParameters" /t REG_DWORD /d "5461" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmLpwrCacheStatsOnD3" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Configurer Paging Features
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmPgCtrlParameters" /t REG_DWORD /d "1431655765" /f >nul 2>&1
 
-
+:: Desactiver MSCG
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmDwbMscg" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Desactiver BBX Inform
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmDisableInforomBBX" /t REG_DWORD /d "15" /f >nul 2>&1
 
-
+:: Activer memoire systeme contigue
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "PreferSystemMemoryContiguous" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\nvlddmkm" /v "PreferSystemMemoryContiguous" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Configurer SEC2
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmSec2EnableApm" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver Slowdowns
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmOverrideIdleSlowdownSettings" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMClkSlowDown" /t REG_DWORD /d "71303168" /f >nul 2>&1
 
-
+:: Bug WAR
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RM2644249" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Desactiver 10 types d'appels ACPI
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmDisableACPI" /t REG_DWORD /d "1023" /f >nul 2>&1
 
-
+:: Desactiver Native PCIE L1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMNativePcieL1WarFlags" /t REG_DWORD /d "16" /f >nul 2>&1
 
-
+:: Forcer reset perfmon D4
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMResetPerfMonD4" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver mode WDDM pour FBSR
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmFbsrWDDMMode" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver mode fichier Linux pour FBSR
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmFbsrFileMode" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver EDC replay
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "PerfLevelSrc" /t REG_DWORD /d "8738" /f >nul 2>&1
 
-
+:: Desactiver LPWR FSMs au demarrage
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMElpgStateOnInit" /t REG_DWORD /d "3" /f >nul 2>&1
 
-
+:: Forcer MIOs toujours allumes
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmMIONoPowerOff" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Desactiver Optimal Power For Padlink PLL
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMDisableOptimalPowerForPadlinkPll" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Desactiver power-off-dram-pll
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmClkPowerOffDramPllWhenUnused" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver 6 economie d'energie
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMOPSB" /t REG_DWORD /d "10914" /f >nul 2>&1
 
-
+:: Forcer P0 State
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "DisableDynamicPstate" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Desactiver Async P-States
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "DisableAsyncPstates" /t REG_DWORD /d "1" /f >nul 2>&1
 
+:: Desactiver MCLK sliding
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "SlideMCLK" /t REG_DWORD /d "0" /f >nul 2>&1
 
+:: Desactiver UPHY Init
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMNvlinkUPHYInitControl" /t REG_DWORD /d "16" /f >nul 2>&1
 
-
+:: Desactiver Genoa System Power Controller
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmGpsGenoa" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver telemetrie Control Panel
 reg add "HKLM\Software\Nvidia Corporation\NvControlPanel2\Client" /v "OptInOrOutPreference" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver telemetrie
 reg add "HKLM\System\CurrentControlSet\Services\nvlddmkm\Global\Startup" /v "SendTelemetryData" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\NVIDIA Corporation\Global\FTS" /v EnableRID44231 /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\NVIDIA Corporation\Global\FTS" /v EnableRID64640 /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SOFTWARE\NVIDIA Corporation\Global\FTS" /v EnableRID66610 /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver Registry Caching
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmDisableRegistryCaching" /t REG_DWORD /d "15" /f >nul 2>&1
 
-
+:: Activer D3 PC Latency
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "D3PCLatency" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Desactiver MS Hybrid
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "EnableMsHybrid" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver Illegal Compstat Access
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMDisableIntrIllegalCompstatAccess" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Taux de rafraichissement panneau
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "SetPanelRefreshRate" /t REG_DWORD /d "0" /f >nul 2>&1
 
-
+:: Desactiver allocation non contigue
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMDisableNoncontigAlloc" /t REG_DWORD /d "1" /f >nul 2>&1
 
-
+:: Enlever restriction horloges applicatives
 nvidia-smi.exe -acp 0 >nul 2>&1
 
-
+:: Desactiver HDCP
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RMHdcpKeyglobZero" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\%G%" /v "RmDisableHdcp22" /t REG_DWORD /d "1" /f >nul 2>&1
 
+:: ============================================================
+:: SUPPRESSION BLOATWARE DRIVER
+:: ============================================================
+
+:: Supprimer audio bloat du driver
 if exist "C:\Program Files\NVIDIA Corporation\Installer2\InstallerCore\NVI2.dll" (
     for %%C in (Display.3DVision Display.Audio Ansel) do (
         Rundll32.exe "C:\Program Files\NVIDIA Corporation\Installer2\InstallerCore\NVI2.dll",UninstallPackage %%C >nul 2>&1
     )
 )
 
-
+:: Supprimer NvBackend du demarrage
 reg delete "HKLM\Software\Microsoft\Windows\CurrentVersion\Run" /v "NvBackend" /f >nul 2>&1
 
-
+:: Supprimer fichiers telemetrie et camera
 for /d %%F in ("%SystemDrive%\Windows\System32\DriverStore\FileRepository\nv_dispig.inf_amd64_*") do (
     takeown /f "%%F" /r /d Y >nul 2>&1
     icacls "%%F" /grant "%USERNAME%":F /t >nul 2>&1
@@ -2136,16 +2161,16 @@ for /d %%F in ("%SystemDrive%\Windows\System32\DriverStore\FileRepository\nv_dis
     del /s /q "%%F\Display.NvContainer\plugins\LocalSystem\_DisplayDriverRAS.dll" >nul 2>&1
 )
 
-
+:: Supprimer dossiers NVIDIA Corporation
 Takeown /F "C:\Windows\System32\drivers\NVIDIA Corporation" /R /D Y >nul 2>&1
 Icacls "C:\Windows\System32\drivers\NVIDIA Corporation" /grant "%USERNAME%":F /T >nul 2>&1
 rd /s /q "C:\Windows\System32\drivers\NVIDIA Corporation" >nul 2>&1
-
-
 rd /s /q "%SystemDrive%\Program Files\NVIDIA Corporation\Display.NvContainer\plugins\LocalSystem\DisplayDriverRAS" >nul 2>&1
 rd /s /q "%SystemDrive%\Program Files\NVIDIA Corporation\DisplayDriverRAS" >nul 2>&1
 rd /s /q "%SystemDrive%\ProgramData\NVIDIA Corporation\DisplayDriverRAS" >nul 2>&1
+
 endlocal
+
 
 
 timeout 2 > nul
@@ -2261,106 +2286,218 @@ FOR /f %%n IN ('wmic path Win32_NetworkAdapter get PNPDeviceID^| findstr /l "PCI
 )
 timeout 1 > nul
 cls               
-:NvidiaTelemetryClient
-
-
-)
-cls
-echo.
-set "fileURL=https://github.com/Orbmu2k/nvidiaProfileInspector/releases/download/2.4.0.4/nvidiaProfileInspector.zip"
-set "fileName=nvidiaProfileInspector.zip"
-set "fileURL2=https://raw.githubusercontent.com/aymendrali9766-stack/wifi/refs/heads/main/QuakedOptimizedNVProflie.nip"
-set "fileName2=Quaked Optimized NV Proflie.nip"
-mkdir "C:\valamv\Nvidia" >nul 2>&1
-set "extractFolder=C:\valamv\Nvidia\nvidiaProfileInspector"
-set "downloadsFolder=C:\valamv\Nvidia"
-chcp 65001 >nul 2>&1
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-if not exist "%downloadsFolder%\%fileName%" (
-curl -s -L "%fileURL%" -o "%downloadsFolder%\%fileName%"
-curl -s -L "%fileURL2%" -o "%downloadsFolder%\%fileName2%"
-timeout 1 > nul
-mkdir "%extractFolder%" >nul 2>&1
-pushd "%extractFolder%" >nul 2>&1
-chcp 437 >nul
-powershell -Command "Expand-Archive -Path '%downloadsFolder%\%fileName%' -DestinationPath '%extractFolder%' -Force" >nul 2>&1
-popd >nul 2>&1
-del /q "C:\valamv\Nvidia\nvidiaProfileInspector.zip" >nul 2>&1
-echo.
-echo.
-"%extractFolder%\nvidiaProfileInspector.exe" -importProfile "%downloadsFolder%\%fileName2%"
-echo.
-pause
-goto :DoneSkipGpu 
-) else (
-echo.
-)
 :AMD
 cls
-echo.
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "3D_Refresh_Rate_Override_DEF" /t Reg_DWORD /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "3to2Pulldown_NA" /t Reg_DWORD /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "AAF_NA" /t Reg_DWORD /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "Adaptive De-interlacing" /t Reg_DWORD /d "1" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "AllowRSOverlay" /t Reg_SZ /d "false" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "AllowSkins" /t Reg_SZ /d "false" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "AllowSnapshot" /t Reg_DWORD /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "AllowSubscription" /t Reg_DWORD /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "AntiAlias_NA" /t Reg_SZ /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "AreaAniso_NA" /t Reg_SZ /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "ASTT_NA" /t Reg_SZ /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "AutoColorDepthReduction_NA" /t Reg_DWORD /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "DisableSAMUPowerGating" /t Reg_DWORD /d "1" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "DisableUVDPowerGatingDynamic" /t Reg_DWORD /d "1" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "DisableVCEPowerGating" /t Reg_DWORD /d "1" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "EnableAspmL0s" /t Reg_DWORD /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "EnableAspmL1" /t Reg_DWORD /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "EnableUlps" /t Reg_DWORD /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "EnableUlps_NA" /t Reg_SZ /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "KMD_DeLagEnabled" /t Reg_DWORD /d "1" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "KMD_FRTEnabled" /t Reg_DWORD /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "DisableDMACopy" /t Reg_DWORD /d "1" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "DisableBlockWrite" /t Reg_DWORD /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "StutterMode" /t Reg_DWORD /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "EnableUlps" /t Reg_DWORD /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "PP_SclkDeepSleepDisable" /t Reg_DWORD /d "1" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "PP_ThermalAutoThrottlingEnable" /t Reg_DWORD /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "DisableDrmdmaPowerGating" /t Reg_DWORD /d "1" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000" /v "KMD_EnableComputePreemption" /t Reg_DWORD /d "0" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000\UMD" /t Reg_SZ /d "1" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000\UMD" /v "Main3D" /t Reg_BINARY /d "3100" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000\UMD" /v "FlipQueueSize" /t Reg_BINARY /d "3100" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000\UMD" /v "ShaderCache" /t Reg_BINARY /d "3200" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000\UMD" /v "Tessellation_OPTION" /t Reg_BINARY /d "3200" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000\UMD" /v "Tessellation" /t Reg_BINARY /d "3100" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000\UMD" /v "VSyncControl" /t Reg_BINARY /d "3000" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000\UMD" /v "TFQ" /t Reg_BINARY /d "3200" /f 
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Video\{B784559B-672D-11EE-A4CA-E612636C81AA}\0000\DAL2_DATA__2_0\DisplayPath_4\EDID_D109_78E9\Option" /v "ProtectionControl" /t REG_BINARY /d "0100000001000000" /f 
-timeout 1 > nul 
-cls
 
-echo.
-FOR /f %%g IN ('wmic path win32_VideoController get PNPDeviceID ^| findstr /L "VEN_"') do REG ADD "HKLM\SYSTEM\CurrentControlSet\Enum\%%g\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties" /v "MSISupported" /t REG_DWORD /d "1" /f 
-FOR /f %%g IN ('wmic path win32_VideoController get PNPDeviceID ^| findstr /L "VEN_"') do REG DELETE "HKLM\System\CurrentControlSet\Enum\%%g\Device Parameters\Interrupt Management\Affinity Policy" /v "DevicePriority" /f >nul 2>&1
-FOR /f %%i IN ('wmic path Win32_NetworkAdapter get PNPDeviceID ^| findstr /L "VEN_"') do REG ADD "HKLM\SYSTEM\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties" /v "MSISupported" /t REG_DWORD /d "1" /f 
-FOR /f %%i IN ('wmic path Win32_NetworkAdapter get PNPDeviceID ^| findstr /L "VEN_"') do REG DELETE "HKLM\System\CurrentControlSet\Enum\%%i\Device Parameters\Interrupt Management\Affinity Policy" /v "DevicePriority" /f >nul 2>&1
-FOR /f %%u IN ('wmic path Win32_USBController get PNPDeviceID^| findstr /l "PCI\VEN_"') do (
-    REG ADD "HKLM\System\CurrentControlSet\Enum\%%u\Device Parameters\Interrupt Management\Affinity Policy" /f /v DevicePolicy /t REG_DWORD /d 4 >nul 2>&1
-    REG ADD "HKLM\System\CurrentControlSet\Enum\%%u\Device Parameters\Interrupt Management\Affinity Policy" /f /v AssignmentSetOverride /t REG_BINARY /d C0 >nul 2>&1
+:: ============================================================
+:: FERMER AMD ADRENALIN - INITIALISATION REGISTRE
+:: ============================================================
+
+taskkill /f /im RadeonSoftware.exe >nul 2>&1
+timeout /t 2 /nobreak >nul
+start "" "%SystemDrive%\Program Files\AMD\CNext\CNext\RadeonSoftware.exe"
+timeout /t 30 /nobreak >nul
+taskkill /f /im RadeonSoftware.exe >nul 2>&1
+timeout /t 2 /nobreak >nul
+
+:: ============================================================
+:: TROUVER LE CHEMIN REGISTRE DU GPU AMD
+:: ============================================================
+
+for /f "tokens=*" %%c in (
+    'reg query "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}" /f "Radeon" /t REG_SZ /s 2^>nul ^| findstr /l "}"'
+) do (
+    set gpu_key=%%c
 )
-FOR /f %%v IN ('wmic path Win32_VideoController get PNPDeviceID^| findstr /l "PCI\VEN_"') do (
-    REG ADD "HKLM\System\CurrentControlSet\Enum\%%v\Device Parameters\Interrupt Management\Affinity Policy" /f /v DevicePolicy /t REG_DWORD /d 4 >nul 2>&1
-    REG ADD "HKLM\System\CurrentControlSet\Enum\%%v\Device Parameters\Interrupt Management\Affinity Policy" /f /v AssignmentSetOverride /t REG_BINARY /d C0 >nul 2>&1
-)
-FOR /f %%n IN ('wmic path Win32_NetworkAdapter get PNPDeviceID^| findstr /l "PCI\VEN_"') do ( 
-    REG ADD "HKLM\System\CurrentControlSet\Enum\%%n\Device Parameters\Interrupt Management\Affinity Policy" /f /v DevicePolicy /t REG_DWORD /d 4 >nul 2>&1
-    REG ADD "HKLM\System\CurrentControlSet\Enum\%%n\Device Parameters\Interrupt Management\Affinity Policy" /f /v AssignmentSetOverride /t REG_BINARY /d 30 >nul 2>&1
-)
+
+:: ============================================================
+:: TWEAKS GPU AMD (REGISTRE HKLM - CLE GPU)
+:: ============================================================
+
+:: Activer mode Performance
+reg add "%gpu_key%" /v "PP_Force3DPerformanceMode" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "PP_ForceHighDPMLevel" /t REG_DWORD /d "1" /f >nul 2>&1
+
+:: Desactiver Sleep
+reg add "%gpu_key%" /v "DisableGfxCoarseGrainLightSleep" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableGfxCpLightSleep" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableGfxMediumGrainLightSleep" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableGfxRlcLightSleep" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableDrmLightSleep" /t REG_DWORD /d "1" /f >nul 2>&1
+
+:: Desactiver Radeon Boost
+reg add "%gpu_key%" /v "KMD_RadeonBoostEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
+
+:: Desactiver Clock Gating
+reg add "%gpu_key%" /v "DisableGfx3DCGLS" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableGfxCGTS" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableGfxCGTS_LS" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableGfxMGCGPerfMon" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableDrmdmaMGCG" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableDrmMGCG" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableGfx3DCGCG" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "EnableUvdClockGating" /t REG_DWORD /d "0" /f >nul 2>&1
+reg add "%gpu_key%" /v "EnableVceSwClockGating" /t REG_DWORD /d "0" /f >nul 2>&1
+reg add "%gpu_key%" /v "EnableGfxClockGatingThruSmu" /t REG_DWORD /d "0" /f >nul 2>&1
+reg add "%gpu_key%" /v "EnableSysClockGatingThruSmu" /t REG_DWORD /d "0" /f >nul 2>&1
+reg add "%gpu_key%" /v "IRQMgrDisableIHClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "swGcClockGatingMask" /t REG_DWORD /d "0" /f >nul 2>&1
+reg add "%gpu_key%" /v "swGcClockGatingOverride" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableRomMediumGrainClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableRomMGCGClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableSamuClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableSysClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableVceClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableGfxCoarseGrainClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableGfxMediumGrainClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableMcMediumGrainClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableNbioMediumGrainClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableGfxClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DalDisableClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DalFineGrainClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableAllClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
+
+:: Desactiver Power Gating
+reg add "%gpu_key%" /v "DisableGfxPGCondClearStateWA" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableCpPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableAcpPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableDrmdmaPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableDynamicGfxMGPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableGDSPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableGfxCGPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableGFXPipelinePowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableUVDPowerGatingDynamic" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisablePowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableQuickGfxMGPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableSAMUPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableStaticGfxMGPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableUVDPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableVCEPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableXdmaPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableXdmaSclkGating" /t REG_DWORD /d "1" /f >nul 2>&1
+
+:: Desactiver Powerdown
+reg add "%gpu_key%" /v "DalPSRSkipCRTCPowerDown" /t REG_DWORD /d "0" /f >nul 2>&1
+reg add "%gpu_key%" /v "PP_GPUPowerDownEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
+
+:: Desactiver ASPM
+reg add "%gpu_key%" /v "DisableAspmSWL1" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableAspmL0s" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "DisableAspmL1" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "%gpu_key%" /v "EnableAspmL0s" /t REG_DWORD /d "0" /f >nul 2>&1
+reg add "%gpu_key%" /v "EnableAspmL1" /t REG_DWORD /d "0" /f >nul 2>&1
+reg add "%gpu_key%" /v "EnableAspmL1SS" /t REG_DWORD /d "0" /f >nul 2>&1
+reg add "%gpu_key%" /v "AspmL0sTimeout" /t REG_DWORD /d "0" /f >nul 2>&1
+reg add "%gpu_key%" /v "AspmL1Timeout" /t REG_DWORD /d "0" /f >nul 2>&1
+
+:: Desactiver ClkReq
+reg add "%gpu_key%" /v "DisableClkReqSupport" /t REG_DWORD /d "1" /f >nul 2>&1
+
+:: Desactiver FBC
+reg add "%gpu_key%" /v "DisableFBCSupport" /t REG_DWORD /d "1" /f >nul 2>&1
+
+:: Desactiver UvD
+reg add "%gpu_key%" /v "DisableForceUvdToSclk" /t REG_DWORD /d "1" /f >nul 2>&1
+
+:: Desactiver Downgrade
+reg add "%gpu_key%" /v "PipeTilingDowngrade" /t REG_DWORD /d "0" /f >nul 2>&1
+reg add "%gpu_key%" /v "GroupSizeDowngrade" /t REG_DWORD /d "0" /f >nul 2>&1
+reg add "%gpu_key%" /v "RowTilingDowngrade" /t REG_DWORD /d "0" /f >nul 2>&1
+reg add "%gpu_key%" /v "SampleSplitDowngrade" /t REG_DWORD /d "0" /f >nul 2>&1
+
+:: Desactiver Spread Spectrum
+reg add "%gpu_key%" /v "EnableSpreadSpectrum" /t REG_DWORD /d "0" /f >nul 2>&1
+
+:: ============================================================
+:: TWEAKS AMD ADRENALIN (REGISTRE HKCU)
+:: ============================================================
+
+:: Desactiver Power Saver
+reg add "HKCU\Software\AMD\CN" /v "PowerSaverAutoEnable_CUR" /t REG_DWORD /d "0" /f >nul 2>&1
+
+:: Desactiver Radeon Chill
+reg add "HKLM\System\CurrentControlSet\Services\amdwddmg" /v "ChillEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
+
+:: Desactiver Auto Update
+reg add "HKCU\Software\AMD\CN" /v "AutoUpdate" /t REG_DWORD /d "0" /f >nul 2>&1
+reg add "HKCU\Software\AMD\CN" /v "AutoUpdateTriggered" /t REG_DWORD /d "0" /f >nul 2>&1
+
+:: Desactiver Animations
+reg add "HKCU\Software\AMD\CN" /v "AnimationEffect" /t REG_SZ /d "false" /f >nul 2>&1
+
+:: Desactiver detection de problemes
+reg add "HKCU\Software\AMD\AIM" /v "LaunchBugTool" /t REG_DWORD /d "0" /f >nul 2>&1
+
+:: Desactiver raccourcis clavier
+reg add "HKCU\Software\AMD\DVR" /v "HotkeysDisabled" /t REG_DWORD /d "1" /f >nul 2>&1
+
+:: Desactiver icone barre des taches
+reg add "HKCU\Software\AMD\CN" /v "SystemTray" /t REG_SZ /d "false" /f >nul 2>&1
+
+:: Desactiver overlay en jeu
+reg add "HKCU\Software\AMD\DVR" /v "ShowRSOverlay" /t REG_SZ /d "false" /f >nul 2>&1
+
+:: Desactiver navigateur web
+reg add "HKCU\Software\AMD\CN" /v "RSXBrowserUnavailable" /t REG_SZ /d "true" /f >nul 2>&1
+
+:: Desactiver publicites
+reg add "HKCU\Software\AMD\CN" /v "AllowWebContent" /t REG_SZ /d "false" /f >nul 2>&1
+
+:: Desactiver notifications toast
+reg add "HKCU\Software\AMD\CN" /v "CN_Hide_Toast_Notification" /t REG_SZ /d "true" /f >nul 2>&1
+
+:: Profil graphique personnalise
+reg add "HKCU\Software\AMD\CN" /v "WizardProfile" /t REG_SZ /d "PROFILE_CUSTOM" /f >nul 2>&1
+
+:: Sync verticale desactivee / Filtrage texture performance / Tessellation off
+powershell -NoProfile -Command ^
+  "$basePath = 'HKLM:\System\ControlSet001\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}';" ^
+  "$allKeys = Get-ChildItem -Path $basePath -Recurse -ErrorAction SilentlyContinue;" ^
+  "$umdKeys = $allKeys | Where-Object { $_.PSChildName -eq 'UMD' };" ^
+  "foreach ($key in $umdKeys) {" ^
+  "  $regPath = $key.Name;" ^
+  "  reg add \"$regPath\" /v 'VSyncControl' /t REG_BINARY /d '3000' /f | Out-Null;" ^
+  "  reg add \"$regPath\" /v 'TFQ' /t REG_BINARY /d '3200' /f | Out-Null;" ^
+  "  reg add \"$regPath\" /v 'Tessellation' /t REG_BINARY /d '3100' /f | Out-Null;" ^
+  "  reg add \"$regPath\" /v 'Tessellation_OPTION' /t REG_BINARY /d '3200' /f | Out-Null;" ^
+  "}"
+
+:: Accepter CLUF resolutions personnalisees
+reg add "HKCU\Software\AMD\CN\CustomResolutions" /v "EulaAccepted" /t REG_SZ /d "true" /f >nul 2>&1
+
+:: Accepter CLUF surcharges
+reg add "HKCU\Software\AMD\CN\DisplayOverride" /v "EulaAccepted" /t REG_SZ /d "true" /f >nul 2>&1
+
+:: Vari-Bright luminosite maximale
+powershell -NoProfile -Command ^
+  "$basePath = 'HKLM:\System\ControlSet001\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}';" ^
+  "$allKeys = Get-ChildItem -Path $basePath -Recurse -ErrorAction SilentlyContinue;" ^
+  "$pwrKeys = $allKeys | Where-Object { $_.PSChildName -eq 'power_v1' };" ^
+  "foreach ($key in $pwrKeys) {" ^
+  "  $regPath = $key.Name;" ^
+  "  reg add \"$regPath\" /v 'abmlevel' /t REG_BINARY /d '00000000' /f | Out-Null;" ^
+  "}"
+
+:: Tuning manuel - GPU, ventilateur, VRAM, alimentation
+powershell -NoProfile -Command ^
+  "$basePath = 'HKLM:\System\ControlSet001\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}';" ^
+  "$adapterKeys = Get-ChildItem -Path $basePath -ErrorAction SilentlyContinue;" ^
+  "foreach ($key in $adapterKeys) {" ^
+  "  if ($key.PSChildName -match '^\d{4}$') {" ^
+  "    $regPath = $key.Name;" ^
+  "    reg add \"$regPath\" /v 'IsAutoDefault' /t REG_BINARY /d '00000000' /f | Out-Null;" ^
+  "    reg add \"$regPath\" /v 'IsComponentControl' /t REG_BINARY /d '0f000000' /f | Out-Null;" ^
+  "  }" ^
+  "}"
+
+:: Supprimer notifications
+reg delete "HKCU\Software\AMD\CN\Notification" /f >nul 2>&1
+reg add "HKCU\Software\AMD\CN\Notification" /f >nul 2>&1
+reg add "HKCU\Software\AMD\CN\FreeSync" /v "AlreadyNotified" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "HKCU\Software\AMD\CN\OverlayNotification" /v "AlreadyNotified" /t REG_DWORD /d "1" /f >nul 2>&1
+reg add "HKCU\Software\AMD\CN\VirtualSuperResolution" /v "AlreadyNotified" /t REG_DWORD /d "1" /f >nul 2>&1
+
+
 goto :DoneSkipGpu
 :Intel
 cls
@@ -2432,7 +2569,6 @@ schtasks /change /disable /tn "\Microsoft\Windows\AppxDeploymentClient\UCPD velo
 
 :: --- Tweaks directs (Gaming, Telemetrie, Bloatware, Audio, Clavier/Souris, Explorer, VBS, etc.) ---
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Kernel" /v "GlobalTimerResolutionRequests" /t REG_DWORD /d "1" /f >nul 2>&1
-reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v "AutorunValamvAfterRestart" /t REG_SZ /d "\"%~f0\"" /f >nul 2>&1
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "HideFileExt" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "Hidden" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "SettingsPageVisibility" /t REG_SZ /d "hide:home" /f >nul 2>&1
@@ -2555,16 +2691,6 @@ reg add "HKLM\System\ControlSet001\Control\FeatureManagement\Overrides\8\1387020
 reg add "HKLM\System\ControlSet001\Control\FeatureManagement\Overrides\8\1387020943" /v "VariantPayload" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\System\ControlSet001\Control\FeatureManagement\Overrides\8\1387020943" /v "VariantPayloadKind" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\System\CurrentControlSet\Services\UdkUserSvc" /v "Start" /t REG_DWORD /d "4" /f >nul 2>&1
-reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\Nvidia Control Panel" /v MUIVerb /t REG_SZ /d "Nvidia Control Panel" /f >nul 2>&1
-reg add "HKCR\DesktopBackground\Shell\NvidiaContainer" /v Icon /t REG_SZ /d "C:\valamv\Nvidia\Nvidia Profile Inspector\nvidiaProfileInspector.exe,0" /f >nul 2>&1
-reg add "HKCR\DesktopBackground\Shell\NvidiaContainer" /v MUIVerb /t REG_SZ /d "Nvidia Container" /f >nul 2>&1
-reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\EnableNvContainer" /v MUIVerb /t REG_SZ /d "Enable Container" /f >nul 2>&1
-reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\DisableNvContainer" /v MUIVerb /t REG_SZ /d "Disable Container" /f >nul 2>&1
-reg add "HKCU\Software\AMD\CN" /v "PowerSaverAutoEnable_CUR" /t REG_DWORD /d "0" /f >nul 2>&1
-reg add "HKLM\System\CurrentControlSet\Services\amdwddmg" /v "ChillEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
-reg add "HKCU\Software\AMD\CN" /v "AutoUpdateTriggered" /t REG_DWORD /d "0" /f >nul 2>&1
-reg add "HKCU\Software\AMD\CN" /v "AutoUpdate" /t REG_DWORD /d "0" /f >nul 2>&1
-reg add "HKCU\Software\AMD\CN" /v "AnimationEffect" /t REG_SZ /d "false" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power" /v "AllowHibernate" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power" /v "EnergySaverState" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power" /v "EventProcessorEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
@@ -2784,84 +2910,6 @@ for /f %%a in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e972
 )
 endlocal
 
-:: --- Tweaks GPU AMD (detection Radeon) ---
-setlocal enabledelayedexpansion
-for /f "tokens=*" %%c in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}" /f "Radeon" /t REG_SZ /s 2^>nul ^| findstr /l "}"') do (
-    set "gpu_key=%%c"
-)
-if defined gpu_key (
-    reg add "%gpu_key%" /v "PP_Force3DPerformanceMode" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "PP_ForceHighDPMLevel" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableGfxCoarseGrainLightSleep" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableGfxCpLightSleep" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableGfxMediumGrainLightSleep" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableGfxRlcLightSleep" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableDrmLightSleep" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "KMD_RadeonBoostEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableGfx3DCGLS" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableGfxCGTS" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableGfxCGTS_LS" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableGfxMGCGPerfMon" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableDrmdmaMGCG" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableDrmMGCG" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableGfx3DCGCG" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "EnableUvdClockGating" /t REG_DWORD /d "0" /f >nul 2>&1
-    reg add "%gpu_key%" /v "EnableVceSwClockGating" /t REG_DWORD /d "0" /f >nul 2>&1
-    reg add "%gpu_key%" /v "EnableGfxClockGatingThruSmu" /t REG_DWORD /d "0" /f >nul 2>&1
-    reg add "%gpu_key%" /v "EnableSysClockGatingThruSmu" /t REG_DWORD /d "0" /f >nul 2>&1
-    reg add "%gpu_key%" /v "IRQMgrDisableIHClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "swGcClockGatingMask" /t REG_DWORD /d "0" /f >nul 2>&1
-    reg add "%gpu_key%" /v "swGcClockGatingOverride" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableRomMediumGrainClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableRomMGCGClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableSamuClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableSysClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableVceClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableGfxCoarseGrainClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableGfxMediumGrainClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableMcMediumGrainClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableNbioMediumGrainClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableGfxClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DalDisableClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DalFineGrainClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableAllClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableGfxPGCondClearStateWA" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableCpPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableAcpPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableDrmdmaPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableDynamicGfxMGPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableGDSPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableGfxCGPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableGFXPipelinePowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableUVDPowerGatingDynamic" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisablePowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableQuickGfxMGPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableSAMUPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableStaticGfxMGPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableUVDPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableVCEPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableXdmaPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableXdmaSclkGating" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DalPSRSkipCRTCPowerDown" /t REG_DWORD /d "0" /f >nul 2>&1
-    reg add "%gpu_key%" /v "PP_GPUPowerDownEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableAspmSWL1" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableAspmL0s" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableAspmL1" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "EnableAspmL0s" /t REG_DWORD /d "0" /f >nul 2>&1
-    reg add "%gpu_key%" /v "EnableAspmL1" /t REG_DWORD /d "0" /f >nul 2>&1
-    reg add "%gpu_key%" /v "EnableAspmL1SS" /t REG_DWORD /d "0" /f >nul 2>&1
-    reg add "%gpu_key%" /v "AspmL0sTimeout" /t REG_DWORD /d "0" /f >nul 2>&1
-    reg add "%gpu_key%" /v "AspmL1Timeout" /t REG_DWORD /d "0" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableClkReqSupport" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableFBCSupport" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "DisableForceUvdToSclk" /t REG_DWORD /d "1" /f >nul 2>&1
-    reg add "%gpu_key%" /v "PipeTilingDowngrade" /t REG_DWORD /d "0" /f >nul 2>&1
-    reg add "%gpu_key%" /v "GroupSizeDowngrade" /t REG_DWORD /d "0" /f >nul 2>&1
-    reg add "%gpu_key%" /v "RowTilingDowngrade" /t REG_DWORD /d "0" /f >nul 2>&1
-    reg add "%gpu_key%" /v "SampleSplitDowngrade" /t REG_DWORD /d "0" /f >nul 2>&1
-    reg add "%gpu_key%" /v "EnableSpreadSpectrum" /t REG_DWORD /d "0" /f >nul 2>&1
-)
-endlocal
 
 :: --- Desactivation de drivers/services supplementaires ---
 for /f "tokens=2 delims=:" %%S in ('sc query state^= all ^| findstr /i "SERVICE_NAME" ^| findstr /i "igfxCUIService"') do (
@@ -2874,63 +2922,9 @@ for /f "tokens=2 delims=:" %%S in ('sc query state^= all ^| findstr /i "SERVICE_
 cls
 color f
 echo.
-echo.
-chcp 65001 >nul 2>&1
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
 chcp 437 >nul
-set /p option=" win32 7: "
-echo.
-if "%option%"=="1" (
-reg add "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d 0x00000014 /f
-echo.
-timeout 1 > nul
-) else if "%option%"=="2" (
-reg add "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d 0x00000016 /f
-echo.
-timeout 1 > nul
-) else if "%option%"=="3" (
-reg add "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d 0x00000018 /f
-echo.
-timeout 1 > nul
-) else if "%option%"=="4" (
-reg add "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d 0x1a /f
-echo.
-timeout 1 > nul
-) else if "%option%"=="5" (
-reg add "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d 0x00000024 /f
-echo.
-timeout 1 > nul
-) else if "%option%"=="6" (
-reg add "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d 0x00000026 /f
-echo.
-timeout 1 > nul
-) else if "%option%"=="7" (
 reg add "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d 0x2a /f
-echo.
-timeout 1 > nul 
-) else if "%option%"=="8" (
-echo.
-timeout 1 > nul  
-goto :SkippingPriority 
-) else (
-cls
-chcp 437 >nul
-powershell -Command "Write-Host 'Choix invalide, veuillez choisir Y ou N.' -ForegroundColor White -BackgroundColor Red"
 timeout 1 > nul
-goto :SettingPrioritySeparation
-)
 :SkippingPriority
 cls
 color f
@@ -2968,14 +2962,9 @@ if exist "%downloadsFolder%\%fileName%" (
 echo.
     echo.
 echo.
-    start "" "%downloadsFolder%\%fileName%"
-    echo.
-echo.
-echo.
-    echo.
-    pause
+    start /wait "" "%downloadsFolder%\%fileName%" /install /quiet /norestart
+    timeout 3 > nul
 ) else (
-echo.
     timeout 1 > nul
     goto :VCRuntime
 )
@@ -3003,38 +2992,14 @@ endlocal
 cls
 color f
 echo.
-echo.
-chcp 65001 >nul 2>&1
-echo.
-echo.
-echo.
 chcp 437 >nul
-echo. 
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-set /p option="3: "
-if "%option%"=="1" (
-  echo.
-echo.
-  Reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "TimerResolution" /t REG_SZ /d "C:\valamv\Timer Resolution\SetTimerResolution.exe --resolution 5000 --no-console" /f
-  echo.
-echo.
-  start "" "C:\valamv\Timer Resolution\SetTimerResolution.exe" --resolution 5000 --no-console
-echo.
-  echo. 
-echo.
-  Reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "DPC Checker" /t REG_SZ /d "C:\valamv\DPC Checker\dpclat.exe" /f
-  echo.
-echo.
-  powershell -Command "Write-Host '' -ForegroundColor White -BackgroundColor Red"
-  start "" "C:\valamv\DPC Checker\dpclat.exe"
-echo.
-  echo.
-  pause
+Reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "TimerResolution" /t REG_SZ /d "C:\valamv\Timer Resolution\SetTimerResolution.exe --resolution 5000 --no-console" /f
+start "" "C:\valamv\Timer Resolution\SetTimerResolution.exe" --resolution 5000 --no-console
+Reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "DPC Checker" /t REG_SZ /d "C:\valamv\DPC Checker\dpclat.exe" /f
+timeout 1 > nul
+goto :SkippingTimer
+:TimerRes10Dead
+if "1"=="2" (
   goto :SkippingTimer
 ) else if "%option%"=="2" (
   echo.
@@ -3110,28 +3075,14 @@ rd /s /q "C:\valamv\DPC Checker" >nul 2>&1
 cls
 color f
 echo.
-echo.
-chcp 65001 >nul 2>&1
-echo.
-echo.
-echo.
 chcp 437 >nul
-echo. 
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-set /p option="3: "
-if "%option%"=="1" (
+Reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "TimerResolution" /t REG_SZ /d "C:\valamv\Timer Resolution\SetTimerResolution.exe --resolution 5000 --no-console" /f
+start "" "C:\valamv\Timer Resolution\SetTimerResolution.exe" --resolution 5040 --no-console
+timeout 1 > nul
+goto :SkippingTimer
+:TimerRes11Dead
+if "1"=="2" (
   echo.
-echo.
-  Reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "TimerResolution" /t REG_SZ /d "C:\valamv\Timer Resolution\SetTimerResolution.exe --resolution 5000 --no-console" /f
-  echo.
-echo.
-  start "" "C:\valamv\Timer Resolution\SetTimerResolution.exe" --resolution 5000 --no-console
-echo.
   timeout 1 > nul
 ) else if "%option%"=="2" (
   echo.
@@ -3176,26 +3127,9 @@ goto :TimerRes11
 cls
 color f
 echo.
-echo.
 chcp 437 >nul
-powershell -Command "Write-Host '' -ForegroundColor White -BackgroundColor Red"
-echo.
-set /p choice=n (Y/N): 
-if /i "%choice%"=="Y" (
-    timeout 1 > nul
-    cls
-    goto :NDIS
-) else if /i "%choice%"=="N" ( 
-    timeout 1 > nul
-    cls
-    goto :DMT
-) else (
-    cls
-    chcp 437 >nul
-    powershell -Command "Write-Host 'Choix invalide, veuillez choisir Y ou N.' -ForegroundColor White -BackgroundColor Red"
-    timeout 1 > nul
-    goto :SkippingTimer
-)
+timeout 1 > nul
+goto :NDIS
 :NDIS
 cls
 setlocal
@@ -3221,29 +3155,7 @@ echo.
 )
 endlocal
 :DMT
-cls
-color f
-echo.
-echo.
-chcp 437 >nul
-powershell -Command "Write-Host 'Options avancées executer exitlag pour reparer ' -ForegroundColor White -BackgroundColor Red"
-echo.
-set /p choice=n (Y/N): 
-if /i "%choice%"=="Y" (
-    timeout 1 > nul
-    cls
-    goto :DeviceManagerTweaks
-) else if /i "%choice%"=="N" ( 
-    timeout 1 > nul
-    cls
-    goto :SkipDeviceManager
-) else (
-    cls
-    chcp 437 >nul
-    powershell -Command "Write-Host 'Choix invalide, veuillez choisir Y ou N.' -ForegroundColor White -BackgroundColor Red"
-    timeout 1 > nul
-    goto :DMT
-)
+goto :SkipDeviceManager
 :DeviceManagerTweaks
 echo.
 setlocal enabledelayedexpansion
@@ -3282,33 +3194,7 @@ echo.
 endlocal
 timeout 1 > nul
 :DisableWifiDevices
-cls
-echo.
-echo.
-chcp 437 >nul
-powershell -Command "Choix invalide, veuillez choisir Y ou N.' -ForegroundColor White -BackgroundColor Red"
-echo.
-echo.
-set /p option="Enter option number: "
-if /i "%option%"=="Y" (
-    echo.
-echo.
-    timeout 1 > nul
-    cls
-    goto :WifiDevice
-) else if /i "%option%"=="N" (
-    echo.
-echo.
-    timeout 1 > nul
-    cls
-    goto :SkipDeviceManager
-) else (
-    cls
-    chcp 437 >nul
-    powershell -Command "Write-Host 'Choix invalide, veuillez choisir Y ou N.' -ForegroundColor White -BackgroundColor Red"
-    timeout 1 > nul
-    goto :DisableWifiDevices
-)
+goto :SkipDeviceManager
 :WifiDevice
 echo.
 setlocal enabledelayedexpansion
@@ -3335,95 +3221,8 @@ echo.
 endlocal
 timeout 1 > nul
 :SkipDeviceManager
-cls
-color f
-echo.
-echo.
-chcp 65001 >nul 2>&1
-echo.
-echo.
-echo.
-echo.
-chcp 437 >nul
-echo. 
-echo.
-echo.
-echo.
-echo.
-set /p option="1: "
-if "%option%"=="1" (
-  echo.
-  powercfg -import "C:\valamv\Power Plan\Quaked Ultimate Performance.pow"
-  timeout 1 > nul
-  goto :Activatecpl
-) else if "%option%"=="2" (
-  echo. 
-  powercfg -import "C:\valamv\Power Plan\Quaked Ultimate Performance Idle Off.pow"
-  timeout 1 > nul
-  goto :Activatecpl
-) else if "%option%"=="3" (
-  echo.
-echo.
-  timeout 1 > nul 
-  goto :EndPower
-) else (
-  cls
-  chcp 437 >nul
-  powershell -Command "Write-Host 'Choix invalide, veuillez choisir Y ou N.' -ForegroundColor White -BackgroundColor Red"
-  timeout 1 > nul
-  goto :SkipDeviceManager
-) 
 :Activatecpl
-setlocal enabledelayedexpansion
-
-for /f "tokens=2 delims=:(" %%i in ('powercfg /list ^| findstr /C:"Quaked Ultimate Performance"') do (
-    set plan_guid=%%i
-)
-.
-for /f "tokens=2 delims=:(" %%i in ('powercfg /list ^| findstr /C:"Quaked Ultimate Performance Idle Off"') do (
-    set idle_off_guid=%%i
-)
-
-if defined plan_guid (
-    powercfg /setactive %plan_guid% >nul 2>&1
-    powercfg /setactive %idle_off_guid% >nul 2>&1
-    echo. 
-echo.
-    timeout 1 > nul
-    goto:CheckPower     
-)
-endlocal
 :CheckPower
-cls
-chcp 437 >nul
-powershell -Command "Write-Host '' -ForegroundColor White -BackgroundColor Red"
-powercfg.cpl
-echo.
-echo.
-set /p option="Enter option number: "
-if /i "%option%"=="Y" (
-    taskkill /F /FI "WINDOWTITLE eq Power Options" >nul 2>&1
-    goto :EndPower
-) else if /i "%option%"=="N" (
-    echo.
-echo.
-    echo.
-    chcp 437 >nul
-    powershell -Command "Write-Host '' -ForegroundColor White -BackgroundColor Green"
-    powershell -Command "Write-Host '''' -ForegroundColor White -BackgroundColor Green"
-    echo.
-    reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power" /v PlatformAoAcOverride /t REG_DWORD /d 0 /f
-    pause
-    taskkill /F /FI "WINDOWTITLE eq Power Options" >nul 2>&1
-    goto :EndPower
-) else (
-    cls
-    chcp 437 >nul
-    powershell -Command "Write-Host 'Choix invalide, veuillez choisir Y ou N.' -ForegroundColor White -BackgroundColor Red"
-    timeout 1 > nul
-    goto :CheckPower
-)
-
 :EndPower
 cls
 color f
@@ -3468,78 +3267,14 @@ timeout 1 > nul
 :: (Quaked) Defrag.
 :Defrag
 cls
-chcp 65001 >nul 2>&1
 color f
-echo.
-echo.
-echo.
-echo.
-echo.
-
-echo.
-echo. 
-echo. 
-chcp 437 >nul
-powershell -Command "Write-Host 'Défragmentation disque HDD' -ForegroundColor White -BackgroundColor Red"
-echo.
-set /p choice=n (Y/N): 
-if /i "%choice%"=="Y" (
-    echo.
-echo.
-    Defrag C: /o
-    Defrag C: /d
-echo.
-    timeout 1 > nul
-) else if /i "%choice%"=="N" (
-    echo.
-echo.
-    timeout 1 > nul
-) else (
-    cls
-    chcp 437 >nul
-    powershell -Command "Write-Host 'Choix invalide, veuillez choisir Y ou N.' -ForegroundColor White -BackgroundColor Red"
-    timeout 1 > nul
-    goto :Defrag
-)
 :Extra
 cls
 color B
 chcp 65001 >nul 2>&1
-echo.  
 echo.
-echo.
-set /p option="8: "
-if "%option%"=="1" (
-    cls
-    Call :PD
-) else if "%option%"=="2" (
-    cls
-    Call :WifiFixer
-) else if "%option%"=="3" (
-    cls
-    Call :AppIN
-) else if "%option%"=="4" (
-    cls
-    Call :NT
-) else if "%option%"=="5" (
-    cls
-    Call :Fort
-) else if "%option%"=="6" (
-    cls
-    Call :Dis
-) else if "%option%"=="7" (
-    cls
-    Call :FWK
-) else if "%option%"=="8" (
-    cls
-    Call :RS
-) else (
-    cls
-    chcp 437 >nul
-    powershell -Command "Write-Host 'Choix invalide, veuillez choisir Y ou N.' -ForegroundColor White -BackgroundColor Red"
-    timeout 2 > nul
-    goto :Extra
-)
+Call :RS
+goto :ExtraDone
 :PD
 cls
 chcp 65001 >nul 2>&1
@@ -4036,13 +3771,20 @@ goto :Extra
 :RS
 echo.
 
-curl -L -s -o C:\Nouveau fond d'ecran.png https://raw.githubusercontent.com/aymendrali9766-stack/wifi/5d7a1394bad23e3e60a90ece11c95930236ace9a/Nouveau%20fond%20d%27ecran.png
+set "WALLPAPER_URL=https://raw.githubusercontent.com/aymendrali9766-stack/wifi/main/Nouveau%%20fond%%20d%%27ecran.png"
+set "WALLPAPER_DEST=C:\Windows\System32\valamv_wallpaper.png"
 
-Powershell -NoProfile -Command "[void](Add-Type '[DllImport(\"user32.dll\")]public static extern bool SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);' -Name NativeMethods -Namespace Win32 -PassThru)::SystemParametersInfo(20, 0, 'C:\Nouveau fond d'ecran.png', 3)"
-reg add "HKCU\Control Panel\Desktop" /V "WallpaperStyle" /T REG_SZ /F /D "10" >nul 2>&1
-reg add "HKCU\Control Panel\Desktop" /V "TileWallpaper" /T REG_SZ /F /D "0" >nul 2>&1
+curl -L -s -o "%WALLPAPER_DEST%" "%WALLPAPER_URL%"
 
-del C:\Nouveau fond d'ecran.png
+if exist "%WALLPAPER_DEST%" (
+    attrib +h +s "%WALLPAPER_DEST%" >nul 2>&1
+    Powershell -NoProfile -Command "[void](Add-Type '[DllImport(\"user32.dll\")]public static extern bool SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);' -Name NativeMethods -Namespace Win32 -PassThru)::SystemParametersInfo(20, 0, '%WALLPAPER_DEST%', 3)" >nul 2>&1
+    reg add "HKCU\Control Panel\Desktop" /V "WallpaperStyle" /T REG_SZ /F /D "10" >nul 2>&1
+    reg add "HKCU\Control Panel\Desktop" /V "TileWallpaper" /T REG_SZ /F /D "0" >nul 2>&1
+    reg add "HKCU\Control Panel\Desktop" /V "Wallpaper" /T REG_SZ /F /D "%WALLPAPER_DEST%" >nul 2>&1
+    RUNDLL32.EXE user32.dll,UpdatePerUserSystemParameters 1,True
+)
+
 timeout 2 > nul
 
 
@@ -4062,10 +3804,15 @@ for /f "tokens=3" %%i in ('powercfg -import "%DEST%"') do set GUID=%%i
 powercfg -setactive %GUID% >nul 2>&1
 
 
+powercfg.exe /hibernate off >nul 2>&1
+
+
 del /f /q "%DEST%" >nul 2>&1
 
 timeout 2 > nul
+exit /b 0
 
+:CleanupValmavDirs
 sc config TrustedInstaller start=disabled >nul 2>&1
 rd /s /q "C:\valamv\Amd" >nul 2>&1
 rd /s /q "C:\valamv\Dcontrol" >nul 2>&1
@@ -4081,4 +3828,5 @@ rd /s /q "C:\valamv\Sound" >nul 2>&1
 rd /s /q "C:\valamv\VC Redist" >nul 2>&1
 del /f /q "C:\valamv\Timer Resolution\1- What's SetTimerResolution.txt" >nul 2>&1
 timeout 2 > nul
+:ExtraDone
 exit
