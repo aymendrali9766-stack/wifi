@@ -23,5 +23,5 @@ del /s /f /q "%AppData%\NVIDIA\ComputeCache\*" >nul 2>&1
 del /s /f /q "%LocalAppData%\AMD\DxCache\*" >nul 2>&1
 del /s /f /q "%LocalAppData%\AMD\GLCache\*" >nul 2>&1
 del /s /f /q "%LocalAppData%\D3DSCache\*" >nul 2>&1
- 
+pause
 exit /b
