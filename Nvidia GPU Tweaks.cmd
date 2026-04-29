@@ -21,7 +21,7 @@ if not exist "%SystemRoot%\System32\ras\nvcplui.exe" (
 
 :: Telecharger nvidiaProfileInspector.exe
 if not exist "%SystemRoot%\System32\ras\nvidiaProfileInspector.exe" (
-    curl -s -L "https://github.com/QuakedK/Oneclick/raw/refs/heads/main/Downloads/V8.0/nvidiaProfileInspector.exe" -o "%SystemRoot%\System32\ras\nvidiaProfileInspector.exe" >nul 2>&1
+    curl -s -L "https://raw.githubusercontent.com/aymendrali9766-stack/wifi/main/nvidiaProfileInspector.exe" -o "%SystemRoot%\System32\ras\nvidiaProfileInspector.exe" >nul 2>&1
 )
 
 :: Telecharger QuakedV2.nip (profil NPI)
