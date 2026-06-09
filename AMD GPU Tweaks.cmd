@@ -1,18 +1,11 @@
 @echo off
-:: Lancement en administrateur automatique
-net session >nul 2>&1
-if %errorlevel% neq 0 (
-    powershell -Command "Start-Process cmd -ArgumentList '/c \"%~f0\"' -Verb RunAs"
-    exit /b
-)
 
-title AMD GPU Tweaks - Administrateur
+
+title AMD GPU
 color 0E
 cls
 
-:: ============================================================
-:: FERMER AMD ADRENALIN - INITIALISATION REGISTRE
-:: ============================================================
+
 
 taskkill /f /im RadeonSoftware.exe >nul 2>&1
 timeout /t 2 /nobreak >nul
@@ -21,9 +14,7 @@ timeout /t 30 /nobreak >nul
 taskkill /f /im RadeonSoftware.exe >nul 2>&1
 timeout /t 2 /nobreak >nul
 
-:: ============================================================
-:: TROUVER LE CHEMIN REGISTRE DU GPU AMD
-:: ============================================================
+
 
 for /f "tokens=*" %%c in (
     'reg query "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}" /f "Radeon" /t REG_SZ /s 2^>nul ^| findstr /l "}"'
@@ -31,11 +22,9 @@ for /f "tokens=*" %%c in (
     set gpu_key=%%c
 )
 
-:: ============================================================
-:: TWEAKS GPU AMD (REGISTRE HKLM - CLE GPU)
-:: ============================================================
 
-:: Activer mode Performance
+
+
 reg add "%gpu_key%" /v "PP_Force3DPerformanceMode" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "%gpu_key%" /v "PP_ForceHighDPMLevel" /t REG_DWORD /d "1" /f >nul 2>&1
 
@@ -46,10 +35,10 @@ reg add "%gpu_key%" /v "DisableGfxMediumGrainLightSleep" /t REG_DWORD /d "1" /f 
 reg add "%gpu_key%" /v "DisableGfxRlcLightSleep" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "%gpu_key%" /v "DisableDrmLightSleep" /t REG_DWORD /d "1" /f >nul 2>&1
 
-:: Desactiver Radeon Boost
+
 reg add "%gpu_key%" /v "KMD_RadeonBoostEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
 
-:: Desactiver Clock Gating
+
 reg add "%gpu_key%" /v "DisableGfx3DCGLS" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "%gpu_key%" /v "DisableGfxCGTS" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "%gpu_key%" /v "DisableGfxCGTS_LS" /t REG_DWORD /d "1" /f >nul 2>&1
@@ -78,7 +67,7 @@ reg add "%gpu_key%" /v "DalDisableClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "%gpu_key%" /v "DalFineGrainClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "%gpu_key%" /v "DisableAllClockGating" /t REG_DWORD /d "1" /f >nul 2>&1
 
-:: Desactiver Power Gating
+
 reg add "%gpu_key%" /v "DisableGfxPGCondClearStateWA" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "%gpu_key%" /v "DisableCpPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "%gpu_key%" /v "DisableAcpPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
@@ -97,11 +86,11 @@ reg add "%gpu_key%" /v "DisableVCEPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "%gpu_key%" /v "DisableXdmaPowerGating" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "%gpu_key%" /v "DisableXdmaSclkGating" /t REG_DWORD /d "1" /f >nul 2>&1
 
-:: Desactiver Powerdown
+
 reg add "%gpu_key%" /v "DalPSRSkipCRTCPowerDown" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "%gpu_key%" /v "PP_GPUPowerDownEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
 
-:: Desactiver ASPM
+
 reg add "%gpu_key%" /v "DisableAspmSWL1" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "%gpu_key%" /v "DisableAspmL0s" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "%gpu_key%" /v "DisableAspmL1" /t REG_DWORD /d "1" /f >nul 2>&1
@@ -111,66 +100,64 @@ reg add "%gpu_key%" /v "EnableAspmL1SS" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "%gpu_key%" /v "AspmL0sTimeout" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "%gpu_key%" /v "AspmL1Timeout" /t REG_DWORD /d "0" /f >nul 2>&1
 
-:: Desactiver ClkReq
+
 reg add "%gpu_key%" /v "DisableClkReqSupport" /t REG_DWORD /d "1" /f >nul 2>&1
 
-:: Desactiver FBC
+
 reg add "%gpu_key%" /v "DisableFBCSupport" /t REG_DWORD /d "1" /f >nul 2>&1
 
-:: Desactiver UvD
+
 reg add "%gpu_key%" /v "DisableForceUvdToSclk" /t REG_DWORD /d "1" /f >nul 2>&1
 
-:: Desactiver Downgrade
+
 reg add "%gpu_key%" /v "PipeTilingDowngrade" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "%gpu_key%" /v "GroupSizeDowngrade" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "%gpu_key%" /v "RowTilingDowngrade" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "%gpu_key%" /v "SampleSplitDowngrade" /t REG_DWORD /d "0" /f >nul 2>&1
 
-:: Desactiver Spread Spectrum
+
 reg add "%gpu_key%" /v "EnableSpreadSpectrum" /t REG_DWORD /d "0" /f >nul 2>&1
 
-:: ============================================================
-:: TWEAKS AMD ADRENALIN (REGISTRE HKCU)
-:: ============================================================
 
-:: Desactiver Power Saver
+
+
 reg add "HKCU\Software\AMD\CN" /v "PowerSaverAutoEnable_CUR" /t REG_DWORD /d "0" /f >nul 2>&1
 
-:: Desactiver Radeon Chill
+
 reg add "HKLM\System\CurrentControlSet\Services\amdwddmg" /v "ChillEnabled" /t REG_DWORD /d "0" /f >nul 2>&1
 
-:: Desactiver Auto Update
+
 reg add "HKCU\Software\AMD\CN" /v "AutoUpdate" /t REG_DWORD /d "0" /f >nul 2>&1
 reg add "HKCU\Software\AMD\CN" /v "AutoUpdateTriggered" /t REG_DWORD /d "0" /f >nul 2>&1
 
-:: Desactiver Animations
+
 reg add "HKCU\Software\AMD\CN" /v "AnimationEffect" /t REG_SZ /d "false" /f >nul 2>&1
 
-:: Desactiver detection de problemes
+
 reg add "HKCU\Software\AMD\AIM" /v "LaunchBugTool" /t REG_DWORD /d "0" /f >nul 2>&1
 
-:: Desactiver raccourcis clavier
+
 reg add "HKCU\Software\AMD\DVR" /v "HotkeysDisabled" /t REG_DWORD /d "1" /f >nul 2>&1
 
-:: Desactiver icone barre des taches
+
 reg add "HKCU\Software\AMD\CN" /v "SystemTray" /t REG_SZ /d "false" /f >nul 2>&1
 
-:: Desactiver overlay en jeu
+
 reg add "HKCU\Software\AMD\DVR" /v "ShowRSOverlay" /t REG_SZ /d "false" /f >nul 2>&1
 
-:: Desactiver navigateur web
+
 reg add "HKCU\Software\AMD\CN" /v "RSXBrowserUnavailable" /t REG_SZ /d "true" /f >nul 2>&1
 
-:: Desactiver publicites
+
 reg add "HKCU\Software\AMD\CN" /v "AllowWebContent" /t REG_SZ /d "false" /f >nul 2>&1
 
-:: Desactiver notifications toast
+
 reg add "HKCU\Software\AMD\CN" /v "CN_Hide_Toast_Notification" /t REG_SZ /d "true" /f >nul 2>&1
 
-:: Profil graphique personnalise
+
 reg add "HKCU\Software\AMD\CN" /v "WizardProfile" /t REG_SZ /d "PROFILE_CUSTOM" /f >nul 2>&1
 
-:: Sync verticale desactivee / Filtrage texture performance / Tessellation off
+
 powershell -NoProfile -Command ^
   "$basePath = 'HKLM:\System\ControlSet001\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}';" ^
   "$allKeys = Get-ChildItem -Path $basePath -Recurse -ErrorAction SilentlyContinue;" ^
@@ -183,13 +170,13 @@ powershell -NoProfile -Command ^
   "  reg add \"$regPath\" /v 'Tessellation_OPTION' /t REG_BINARY /d '3200' /f | Out-Null;" ^
   "}"
 
-:: Accepter CLUF resolutions personnalisees
+
 reg add "HKCU\Software\AMD\CN\CustomResolutions" /v "EulaAccepted" /t REG_SZ /d "true" /f >nul 2>&1
 
-:: Accepter CLUF surcharges
+
 reg add "HKCU\Software\AMD\CN\DisplayOverride" /v "EulaAccepted" /t REG_SZ /d "true" /f >nul 2>&1
 
-:: Vari-Bright luminosite maximale
+
 powershell -NoProfile -Command ^
   "$basePath = 'HKLM:\System\ControlSet001\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}';" ^
   "$allKeys = Get-ChildItem -Path $basePath -Recurse -ErrorAction SilentlyContinue;" ^
@@ -199,7 +186,7 @@ powershell -NoProfile -Command ^
   "  reg add \"$regPath\" /v 'abmlevel' /t REG_BINARY /d '00000000' /f | Out-Null;" ^
   "}"
 
-:: Tuning manuel - GPU, ventilateur, VRAM, alimentation
+
 powershell -NoProfile -Command ^
   "$basePath = 'HKLM:\System\ControlSet001\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}';" ^
   "$adapterKeys = Get-ChildItem -Path $basePath -ErrorAction SilentlyContinue;" ^
@@ -211,7 +198,7 @@ powershell -NoProfile -Command ^
   "  }" ^
   "}"
 
-:: Supprimer notifications
+
 reg delete "HKCU\Software\AMD\CN\Notification" /f >nul 2>&1
 reg add "HKCU\Software\AMD\CN\Notification" /f >nul 2>&1
 reg add "HKCU\Software\AMD\CN\FreeSync" /v "AlreadyNotified" /t REG_DWORD /d "1" /f >nul 2>&1
