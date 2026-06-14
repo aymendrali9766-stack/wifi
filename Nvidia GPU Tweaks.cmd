@@ -82,14 +82,14 @@ for /L %%i in (0,1,9) do (
 :: ============================================================
 
 reg add "HKCR\DesktopBackground\Shell\NvidiaContainer" /v Icon /t REG_SZ /d "%SystemRoot%\System32\ras\nvidiaProfileInspector.exe,0" /f >nul 2>&1
-reg add "HKCR\DesktopBackground\Shell\NvidiaContainer" /v MUIVerb /t REG_SZ /d "Nvidia Container" /f >nul 2>&1
+reg add "HKCR\DesktopBackground\Shell\NvidiaContainer" /v MUIVerb /t REG_SZ /d "Nvidia" /f >nul 2>&1
 reg add "HKCR\DesktopBackground\Shell\NvidiaContainer" /v Position /t REG_SZ /d "Bottom" /f >nul 2>&1
 reg add "HKCR\DesktopBackground\Shell\NvidiaContainer" /v SubCommands /t REG_SZ /d "" /f >nul 2>&1
 reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\EnableNvContainer" /v HasLUAShield /t REG_SZ /d "" /f >nul 2>&1
-reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\EnableNvContainer" /v MUIVerb /t REG_SZ /d "Enable Container" /f >nul 2>&1
+reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\EnableNvContainer" /v MUIVerb /t REG_SZ /d "Activer les clips" /f >nul 2>&1
 reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\EnableNvContainer\command" /ve /t REG_SZ /d "%SystemRoot%\System32\ras\Nvidia Container ON.bat" /f >nul 2>&1
 reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\DisableNvContainer" /v HasLUAShield /t REG_SZ /d "" /f >nul 2>&1
-reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\DisableNvContainer" /v MUIVerb /t REG_SZ /d "Disable Container" /f >nul 2>&1
+reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\DisableNvContainer" /v MUIVerb /t REG_SZ /d "Desactive les clips" /f >nul 2>&1
 reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\DisableNvContainer\command" /ve /t REG_SZ /d "%SystemRoot%\System32\ras\Nvidia Container OFF.bat" /f >nul 2>&1
 
 :: ============================================================
@@ -97,7 +97,7 @@ reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\DisableNvContainer\c
 :: ============================================================
 
 reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\Nvidia Control Panel" /v HasLUAShield /t REG_SZ /d "" /f >nul 2>&1
-reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\Nvidia Control Panel" /v MUIVerb /t REG_SZ /d "Nvidia Control Panel" /f >nul 2>&1
+reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\Nvidia Control Panel" /v MUIVerb /t REG_SZ /d "Pannel nvidia" /f >nul 2>&1
 reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\Nvidia Control Panel\command" /ve /t REG_SZ /d "%SystemRoot%\System32\ras\nvcplui.exe" /f >nul 2>&1
 
 :: Supprimer l'ancien menu clic droit Nvidia Control Panel
