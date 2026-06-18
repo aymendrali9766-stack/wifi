@@ -2,7 +2,7 @@
 
 
 title AMD GPU
-color 0E
+color f
 cls
 
 
