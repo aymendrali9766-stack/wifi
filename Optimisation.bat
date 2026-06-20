@@ -57,6 +57,7 @@ reg delete "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\Syste
 reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" /v "SystemRestorePointCreationFrequency" /t REG_DWORD /d 0 /f >nul 2>&1
 timeout 1 > nul
 powershell -Command "Checkpoint-Computer -Description 'Valamvrestau'" >nul 2>&1
+echo 5 > "%TEMP%\valamv_progress.txt"
 timeout 2 > nul
 
 cls
@@ -82,6 +83,7 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "PublishUserActivit
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "UploadUserActivities" /t REG_DWORD /d 0 /f
 echo.
 timeout 1 > nul
+echo 8 > "%TEMP%\valamv_progress.txt"
 cls
 color f
 echo.
@@ -98,6 +100,7 @@ reg add "HKCU\Software\Policies\Microsoft\Windows\Explorer" /v DisableNotificati
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\PushNotifications" /v ToastEnabled /t REG_DWORD /d 0 /f
 echo.
 timeout 1 > nul
+echo 11 > "%TEMP%\valamv_progress.txt"
 cls
 color f
 echo.
@@ -124,6 +127,7 @@ powershell -Command "New-Item -Path 'HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa
 echo.
 echo.
 timeout 1 > nul
+echo 14 > "%TEMP%\valamv_progress.txt"
 cls
 color f
 echo.
@@ -161,6 +165,7 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTas
 powershell -Command "Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name 'UserPreferencesMask' -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
 echo.
 timeout 1 > nul
+echo 17 > "%TEMP%\valamv_progress.txt"
 cls
 color f
 echo.
@@ -192,6 +197,7 @@ echo.
 reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize /v EnableTransparency /t REG_DWORD /d 0 /f
 echo.
 timeout 1 > nul
+echo 20 > "%TEMP%\valamv_progress.txt"
 cls
 color f
 echo.
@@ -212,6 +218,7 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSetti
 powercfg.exe /hibernate off
 echo.
 timeout 1 > nul
+echo 23 > "%TEMP%\valamv_progress.txt"
 cls
 color f
 echo.
@@ -234,6 +241,7 @@ echo.
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v DisabledComponents /t REG_DWORD /d 1 /f
 echo.
 timeout 1 > nul
+echo 26 > "%TEMP%\valamv_progress.txt"
 cls
 color f
 echo.
@@ -601,6 +609,7 @@ cls
 color f
 echo.
 :: Change boot menu policy to Legacy
+echo 29 > "%TEMP%\valamv_progress.txt"
 bcdedit /set {current} bootmenupolicy Legacy >nul 2>&1
 :: Check if the Windows build is less than 22557 and apply Task Manager tweak.
 for /f "tokens=3" %%i in ('reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v CurrentBuild 2^>nul ^| findstr /r /c:"CurrentBuild"') do (
@@ -633,6 +642,7 @@ if exist "%autoLoggerDir%\AutoLogger-Diagtrack-Listener.etl" (
 )
 icacls "%autoLoggerDir%" /deny SYSTEM:(OI)(CI)F >nul 2>&1
 :: Disabling Core isolation/Memory integrity
+echo 32 > "%TEMP%\valamv_progress.txt"
 reg add "HKLM\System\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity" /v Enabled /t REG_DWORD /d 0 /f >nul 2>&1 
 :: Fake Success Output. 
 echo.
@@ -670,6 +680,7 @@ echo.
 echo.                                                                          
 timeout 1 > nul  
 :: Privacy is Freedom's Service Control tweaks.
+echo 35 > "%TEMP%\valamv_progress.txt"
 cls
 color f
 chcp 65001 >nul 2>&1
@@ -1076,6 +1087,7 @@ sc config BraveElevationService start=disabled >nul 2>&1
 sc config brave start=disabled >nul 2>&1
 sc config bravem start=disabled >nul 2>&1
 :: Fake Success Output.
+echo 38 > "%TEMP%\valamv_progress.txt"
 echo.
 echo.
 echo.
@@ -1108,6 +1120,7 @@ sc config "Intel(R) SUR QC SAM" start=disabled >nul 2>&1
 sc config SystemUsageReportSvc_QUEENCREEK start=disabled >nul 2>&1
 sc config iaStorAfsService start=disabled >nul 2>&1
 :: AMD Bloat, NSudo needed to disable! | Disables unnecessary AMD services.
+echo 41 > "%TEMP%\valamv_progress.txt"
 "C:\valamv\NSudo\NSudoLG.exe" -ShowWindowMode:hide -U:T -P:E "C:\valamv\Amd\AMD.bat"
 :: Fake Success Output.
 echo.
@@ -1155,6 +1168,7 @@ rd /s /q "C:\Program Files\CCleaner" >nul 2>&1
 rd /s /q "C:\Program Files (x86)\CCleaner Browser" >nul 2>&1
 rd /s /q  "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\CCleaner" >nul 2>&1
 :: Logitech
+echo 44 > "%TEMP%\valamv_progress.txt"
 sc config logi_lamparray_service start=disabled >nul 2>&1
 :: Fake Success Output.
 echo.
@@ -1522,6 +1536,7 @@ color f
 echo.
 setlocal enabledelayedexpansion
 :: Finding Roblox and Discord path.
+echo 47 > "%TEMP%\valamv_progress.txt"
 for /f "delims=" %%i in ('dir /b /s "%USERPROFILE%\AppData\Local\Roblox\Versions\RobloxPlayerBeta.exe" 2^>nul') do set "robloxPath=%%i"
 for /f "delims=" %%i in ('dir /b /s "%USERPROFILE%\AppData\Local\Discord\Discord.exe" 2^>nul') do set "discordPath=%%i"
 :: Games Paths.
@@ -1597,10 +1612,12 @@ set "apps[17]=%USERPROFILE%\AppData\Local\Programs\Opera GX\launcher.exe"
 set "apps[18]=C:\Windows\System32\dwm.exe"
 set "apps[19]=C:\Windows\explorer.exe"
 :: Registry Keys
+echo 50 > "%TEMP%\valamv_progress.txt"
 set regKeyGP=HKEY_CURRENT_USER\SOFTWARE\Microsoft\DirectX\UserGpuPreferences
 set regKeyPR=HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options
 set regKeyFO=HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers
 :: Set Games to High Performance and Hgh Priority.
+echo 53 > "%TEMP%\valamv_progress.txt"
 for /L %%i in (0, 1, 30) do (
     set "currentPath=!games[%%i]!"
     if exist "!currentPath!" (
@@ -1787,6 +1804,7 @@ echo.
 echo.
 echo.
 :: Detection auto de la carte graphique
+echo 56 > "%TEMP%\valamv_progress.txt"
 set "gpu_found="
 for /f "skip=1 delims=" %%g in ('wmic path win32_VideoController get name 2^>nul') do (
     echo %%g | findstr /i "NVIDIA" >nul && if not defined gpu_found set "gpu_found=NVIDIA"
@@ -1848,6 +1866,7 @@ echo exit
 ) > "%SystemRoot%\System32\ras\Nvidia Container OFF.bat"
 
 :: ============================================================
+echo 59 > "%TEMP%\valamv_progress.txt"
 :: DESACTIVER SERVICES NVIDIA
 :: ============================================================
 
@@ -1895,7 +1914,7 @@ reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\DisableNvContainer\c
 :: ============================================================
 
 reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\Nvidia Control Panel" /v HasLUAShield /t REG_SZ /d "" /f >nul 2>&1
-reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\Nvidia Control Panel" /v MUIVerb /t REG_SZ /d "Nvidia Control Panel" /f >nul 2>&1
+reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\Nvidia Control Panel" /v MUIVerb /t REG_SZ /d "Pannel nvidia" /f >nul 2>&1
 reg add "HKCR\DesktopBackground\Shell\NvidiaContainer\Shell\Nvidia Control Panel\command" /ve /t REG_SZ /d "%SystemRoot%\System32\ras\nvcplui.exe" /f >nul 2>&1
 
 :: Supprimer l'ancien menu clic droit Nvidia Control Panel
@@ -1903,6 +1922,7 @@ reg add "HKCR\Directory\Background\shellex\ContextMenuHandlers\NvCplDesktopConte
 
 :: ============================================================
 :: TWEAKS REGISTRE NVIDIA
+echo 62 > "%TEMP%\valamv_progress.txt"
 :: ============================================================
 
 :: Desactiver notification driver
@@ -2140,6 +2160,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08
 
 :: ============================================================
 :: SUPPRESSION BLOATWARE DRIVER
+echo 65 > "%TEMP%\valamv_progress.txt"
 :: ============================================================
 
 :: Supprimer audio bloat du driver
@@ -2175,7 +2196,7 @@ endlocal
 
 timeout 2 > nul
 
-Nettoyage
+
 del /s /q "%LocalAppData%\Microsoft\Windows\WebCache" 
 rd /s /q "%LocalAppData%\Microsoft\Windows\WebCache" >nul 2>&1
 mkdir "%LocalAppData%\Microsoft\Windows\WebCache" >nul 2>&1
@@ -2290,6 +2311,7 @@ cls
 cls
 
 :: ============================================================
+echo 68 > "%TEMP%\valamv_progress.txt"
 :: FERMER AMD ADRENALIN - INITIALISATION REGISTRE
 :: ============================================================
 
@@ -2312,6 +2334,7 @@ for /f "tokens=*" %%c in (
 
 :: ============================================================
 :: TWEAKS GPU AMD (REGISTRE HKLM - CLE GPU)
+echo 71 > "%TEMP%\valamv_progress.txt"
 :: ============================================================
 
 :: Activer mode Performance
@@ -2410,6 +2433,7 @@ reg add "%gpu_key%" /v "EnableSpreadSpectrum" /t REG_DWORD /d "0" /f >nul 2>&1
 
 :: ============================================================
 :: TWEAKS AMD ADRENALIN (REGISTRE HKCU)
+echo 74 > "%TEMP%\valamv_progress.txt"
 :: ============================================================
 
 :: Desactiver Power Saver
@@ -2556,6 +2580,7 @@ echo.
 timeout 1 > nul
 
 :: =====================================================================
+echo 77 > "%TEMP%\valamv_progress.txt"
 :: MISE A JOUR V8.4 - Nouvelles optimisations (silencieuses)
 :: =====================================================================
 
@@ -2720,6 +2745,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\vwififlt" /v "Start" /t REG_DWOR
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\vwifimp" /v "Start" /t REG_DWORD /d "3" /f >nul 2>&1
 
 :: --- Services Windows (Bluetooth, Hyper-V, lecteurs obsoletes, etc.) ---
+echo 80 > "%TEMP%\valamv_progress.txt"
 sc config "ucpd" start=disabled >nul 2>&1
 sc config AarSvc start=disabled >nul 2>&1
 sc config ADPSvc start=disabled >nul 2>&1
@@ -2831,6 +2857,7 @@ sc config "EpicOnlineServices" start=auto >nul 2>&1
 netsh interface teredo set state disabled >nul 2>&1
 
 :: --- Tweaks NIC (Carte reseau) ---
+echo 83 > "%TEMP%\valamv_progress.txt"
 setlocal enabledelayedexpansion
 for /f %%a in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e972-e325-11ce-bfc1-08002be10318}" /v "*SpeedDuplex" /s 2^>nul ^| findstr "HKEY"') do (
     for /f %%i in ('reg query "%%a" /v "*ReceiveBuffers" 2^>nul ^| findstr "HKEY"') do reg add "%%i" /v "*ReceiveBuffers" /t REG_SZ /d "2048" /f >nul 2>&1
@@ -2912,6 +2939,7 @@ endlocal
 
 
 :: --- Desactivation de drivers/services supplementaires ---
+echo 86 > "%TEMP%\valamv_progress.txt"
 for /f "tokens=2 delims=:" %%S in ('sc query state^= all ^| findstr /i "SERVICE_NAME" ^| findstr /i "igfxCUIService"') do (
     set "Svc=%%S"
     set "Svc=!Svc:~1!"
@@ -2994,7 +3022,7 @@ color f
 echo.
 chcp 437 >nul
 Reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "TimerResolution" /t REG_SZ /d "C:\valamv\Timer Resolution\SetTimerResolution.exe --resolution 5000 --no-console" /f
-start "" "C:\valamv\Timer Resolution\SetTimerResolution.exe" --resolution 5000 --no-console
+start "" "C:\valamv\Timer Resolution\SetTimerResolution.exe" --resolution 5040 --no-console
 Reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "DPC Checker" /t REG_SZ /d "C:\valamv\DPC Checker\dpclat.exe" /f
 timeout 1 > nul
 goto :SkippingTimer
@@ -3262,9 +3290,30 @@ nbtstat -R
 nbtstat -RR
 ipconfig /flushdns
 ipconfig /registerdns >nul 2>&1
+
+
+rd /s /q "C:\valamv\Amd" >nul 2>&1
+rd /s /q "C:\valamv\Dcontrol" >nul 2>&1
+rd /s /q "C:\valamv\DnsJumper" >nul 2>&1
+rd /s /q "C:\valamv\Fortnite Optimizer Tools" >nul 2>&1
+rd /s /q "C:\valamv\NSudo" >nul 2>&1
+rd /s /q "C:\valamv\OOshutup10" >nul 2>&1
+rd /s /q "C:\valamv\Open Shell" >nul 2>&1
+rd /s /q "C:\valamv\Orca" >nul 2>&1
+rd /s /q "C:\valamv\Power Plan" >nul 2>&1
+rd /s /q "C:\valamv\Process Destroyer" >nul 2>&1
+rd /s /q "C:\valamv\Sound" >nul 2>&1
+rd /s /q "C:\valamv\VC Redist" >nul 2>&1
+del /f /q "C:\valamv\Timer Resolution\1- What's SetTimerResolution.txt" >nul 2>&1
+del /f /q "C:\Windows\System32\ras\QuakedV2.nip" >nul 2>&1
+del /f /q "C:\Windows\System32\ras\nvidiaProfileInspector.exe" >nul 2>&1
+del /q "C:\Oneclick Tools.zip" >nul 2>&1
+
+
 echo.
 timeout 1 > nul
 :: (Quaked) Defrag.
+echo 89 > "%TEMP%\valamv_progress.txt"
 :Defrag
 cls
 color f
@@ -3466,6 +3515,7 @@ mkdir "C:\valamv\App Installer" >nul 2>&1
 set "downloadsFolder=C:\valamv\App Installer"
 curl -s -L "%fileURL%" -o "%downloadsFolder%\%fileName%"
 :: Check if the file was downloaded successfully
+echo 93 > "%TEMP%\valamv_progress.txt"
 if exist "%downloadsFolder%\%fileName%" (
 echo.
     echo.
@@ -3830,3 +3880,5 @@ del /f /q "C:\valamv\Timer Resolution\1- What's SetTimerResolution.txt" >nul 2>&
 timeout 2 > nul
 :ExtraDone
 exit
+
+echo 100 > "%TEMP%\valamv_progress.txt"
