@@ -260,15 +260,15 @@ color f
 chcp 437 >nul
 echo.
 timeout 1 > nul
-sc config AJRouter start=disabled
+sc config AJRouter start=demand
 sc config ALG start=demand
 sc config AppIDSvc start=demand >nul 2>&1 
 sc config AppMgmt start=demand >nul 2>&1 
 sc config AppReadiness start=demand
-sc config AppVClient start=disabled >nul 2>&1 
+sc config AppVClient start=demand >nul 2>&1 
 sc config AppXSvc start=demand >nul 2>&1 
 sc config Appinfo start=demand
-sc config AssignedAccessManagerSvc start=disabled >nul 2>&1 
+sc config AssignedAccessManagerSvc start=demand >nul 2>&1 
 sc config AudioEndpointBuilder start=auto
 sc config AudioSrv start=auto
 sc config Audiosrv start=auto
@@ -304,8 +304,8 @@ sc config DeviceInstall start=demand
 sc config DevicePickerUserSvc_dc2a4 start=demand >nul 2>&1 
 sc config DevicesFlowUserSvc_dc2a4 start=demand >nul 2>&1 
 sc config Dhcp start=auto
-sc config DiagTrack start=disabled
-sc config DialogBlockingService start=disabled >nul 2>&1 
+sc config DiagTrack start=demand
+sc config DialogBlockingService start=demand >nul 2>&1 
 sc config DispBrokerDesktopSvc start=auto
 sc config DisplayEnhancementService start=demand
 sc config DmEnrollmentSvc start=demand
@@ -340,7 +340,7 @@ sc config LanmanServer start=auto
 sc config LanmanWorkstation start=auto
 sc config LicenseManager start=demand
 sc config LxpSvc start=demand
-sc config MSDTC start=disabled
+sc config MSDTC start=demand
 sc config MSiSCSI start=demand
 sc config MapsBroker start=delayed-auto
 sc config McpManagementService start=demand
@@ -355,7 +355,7 @@ sc config NcaSvc start=demand
 sc config NcbService start=demand
 sc config NcdAutoSetup start=demand
 sc config NetSetupSvc start=demand
-sc config NetTcpPortSharing start=disabled
+sc config NetTcpPortSharing start=demand
 sc config Netlogon start=demand
 sc config Netman start=demand
 sc config NgcCtnrSvc start=demand >nul 2>&1 
@@ -381,8 +381,8 @@ sc config PushToInstall start=demand
 sc config QWAVE start=demand
 sc config RasAuto start=demand
 sc config RasMan start=demand
-sc config RemoteAccess start=disabled
-sc config RemoteRegistry start=disabled
+sc config RemoteAccess start=demand
+sc config RemoteRegistry start=demand
 sc config RetailDemo start=demand
 sc config RmSvc start=demand
 sc config RpcEptMapper start=auto >nul 2>&1 
@@ -431,7 +431,7 @@ sc config TroubleshootingSvc start=demand
 sc config TrustedInstaller start=demand
 sc config UI0Detect start=demand >nul 2>&1 
 sc config UdkUserSvc_dc2a4 start=demand >nul 2>&1 
-sc config UevAgentService start=disabled >nul 2>&1 
+sc config UevAgentService start=demand >nul 2>&1 
 sc config UmRdpService start=demand
 sc config UnistoreSvc_dc2a4 start=demand >nul 2>&1 
 sc config UserDataSvc_dc2a4 start=demand >nul 2>&1 
@@ -508,16 +508,16 @@ sc config p2psvc start=demand
 sc config perceptionsimulation start=demand
 sc config pla start=demand
 sc config seclogon start=demand
-sc config shpamsvc start=disabled
-sc config smphost start=disabled
+sc config shpamsvc start=demand
+sc config smphost start=demand
 sc config spectrum start=demand
 sc config sppsvc start=delayed-auto >nul 2>&1 
-sc config ssh-agent start=disabled
+sc config ssh-agent start=demand
 sc config svsvc start=demand
 sc config swprv start=demand
 sc config tiledatamodelsvc start=auto >nul 2>&1 
-sc config tzautoupdate start=disabled
-sc config uhssvc start=disabled >nul 2>&1 
+sc config tzautoupdate start=demand
+sc config uhssvc start=demand >nul 2>&1 
 sc config upnphost start=demand
 sc config vds start=demand
 sc config vm3dservice start=demand >nul 2>&1 
@@ -707,95 +707,95 @@ reg add "HKCU\System\GameConfigStore" /v "GameDVR_HonorUserFSEBehaviorMode" /t R
 reg add "HKCU\System\GameConfigStore" /v "GameDVR_Enabled" /t REG_DWORD /d "0" /f
 reg add "HKLM\Software\Policies\Microsoft\Windows\GameDVR" /v "AllowgameDVR" /t REG_DWORD /d "0" /f
 reg add "HKCU\Software\Microsoft\GameBar" /v "AutoGameModeEnabled" /t REG_DWORD /d "0" /f
-sc config wlidsvc start= disabled
-sc config DisplayEnhancementService start= disabled
-sc config DiagTrack start= disabled
-sc config DusmSvc start= disabled
-sc config TabletInputService start= disabled >nul 2>&1
-sc config RetailDemo start= disabled
-sc config Fax start= disabled >nul 2>&1
-sc config SharedAccess start= disabled
-sc config lfsvc start= disabled
-sc config WpcMonSvc start= disabled
-sc config SessionEnv start= disabled
-sc config MicrosoftEdgeElevationService start= disabled
-sc config edgeupdate start= disabled
-sc config edgeupdatem start= disabled
-sc config autotimesvc start= disabled
-sc config CscService start= disabled >nul 2>&1
-sc config TermService start= disabled
-sc config SensorDataService start= disabled
-sc config SensorService start= disabled
-sc config SensrSvc start= disabled
-sc config shpamsvc start= disabled
-sc config diagnosticshub.standardcollector.service start= disabled
-sc config PhoneSvc start= disabled
-sc config TapiSrv start= disabled
-sc config UevAgentService start= disabled >nul 2>&1
-sc config WalletService start= disabled
-sc config TokenBroker start= disabled
-sc config WebClient start= disabled
-sc config MixedRealityOpenXRSvc start= disabled >nul 2>&1
-sc config stisvc start= disabled
-sc config WbioSrvc start= disabled
-sc config icssvc start= disabled
-sc config Wecsvc start= disabled
-sc config XboxGipSvc start= disabled
-sc config XblAuthManager start= disabled
-sc config XboxNetApiSvc start= disabled
-sc config XblGameSave start= disabled
-sc config SEMgrSvc start= disabled
-sc config iphlpsvc start= disabled
-sc config Backupper Service start= disabled >nul 2>&1
-sc config BthAvctpSvc start= disabled
-sc config BDESVC start= disabled >nul 2>&1
-sc config cbdhsvc start= disabled
-sc config CDPSvc start= disabled
-sc config CDPUserSvc start= disabled
-sc config DevQueryBroker start= disabled
-sc config DevicesFlowUserSvc start= disabled
-sc config dmwappushservice start= disabled
-sc config DispBrokerDesktopSvc start= disabled
-sc config TrkWks start= disabled
-sc config dLauncherLoopback start= disabled >nul 2>&1
-sc config EFS start= disabled
-sc config fdPHost start= disabled
-sc config FDResPub start= disabled
-sc config IKEEXT start= disabled
-sc config NPSMSvc start= disabled
-sc config WPDBusEnum start= disabled
-sc config PcaSvc start= disabled
-sc config RasMan start= disabled
-sc config RetailDemo start=disabled
-sc config SstpSvc start=disabled
-sc config ShellHWDetection start= disabled
-sc config SSDPSRV start= disabled
-sc config SysMain start= disabled
-sc config OneSyncSvc start= disabled
-sc config lmhosts start= disabled
-sc config UserDataSvc start= disabled
-sc config UnistoreSvc start= disabled
-sc config Wcmsvc start= disabled
-sc config FontCache start= disabled
-sc config W32Time start= disabled
-sc config tzautoupdate start= disabled
-sc config DsSvc start= disabled
-sc config DevicesFlowUserSvc_5f1ad start= disabled >nul 2>&1
-sc config diagsvc start= disabled
-sc config DialogBlockingService start= disabled >nul 2>&1
-sc config PimIndexMaintenanceSvc_5f1ad start= disabled >nul 2>&1
-sc config MessagingService_5f1ad start= disabled >nul 2>&1
-sc config AppVClient start= disabled >nul 2>&1
-sc config MsKeyboardFilter start= disabled >nul 2>&1
-sc config NetTcpPortSharing start= disabled
-sc config ssh-agent start= disabled
-sc config SstpSvc start= disabled
-sc config OneSyncSvc_5f1ad start= disabled >nul 2>&1
-sc config wercplsupport start= disabled
-sc config WMPNetworkSvc start= disabled >nul 2>&1
-sc config WerSvc start= disabled
-sc config WpnUserService_5f1ad start= disabled >nul 2>&1
-sc config WinHttpAutoProxySvc start= disabled >nul 2>&1
+sc config wlidsvc start=demand
+sc config DisplayEnhancementService start=demand
+sc config DiagTrack start=demand
+sc config DusmSvc start=demand
+sc config TabletInputService start=demand >nul 2>&1
+sc config RetailDemo start=demand
+sc config Fax start=demand >nul 2>&1
+sc config SharedAccess start=demand
+sc config lfsvc start=demand
+sc config WpcMonSvc start=demand
+sc config SessionEnv start=demand
+sc config MicrosoftEdgeElevationService start=demand
+sc config edgeupdate start=demand
+sc config edgeupdatem start=demand
+sc config autotimesvc start=demand
+sc config CscService start=demand >nul 2>&1
+sc config TermService start=demand
+sc config SensorDataService start=demand
+sc config SensorService start=demand
+sc config SensrSvc start=demand
+sc config shpamsvc start=demand
+sc config diagnosticshub.standardcollector.service start=demand
+sc config PhoneSvc start=demand
+sc config TapiSrv start=demand
+sc config UevAgentService start=demand >nul 2>&1
+sc config WalletService start=demand
+sc config TokenBroker start=demand
+sc config WebClient start=demand
+sc config MixedRealityOpenXRSvc start=demand >nul 2>&1
+sc config stisvc start=demand
+sc config WbioSrvc start=demand
+sc config icssvc start=demand
+sc config Wecsvc start=demand
+sc config XboxGipSvc start=demand
+sc config XblAuthManager start=demand
+sc config XboxNetApiSvc start=demand
+sc config XblGameSave start=demand
+sc config SEMgrSvc start=demand
+sc config iphlpsvc start=demand
+sc config Backupper Service start=demand >nul 2>&1
+sc config BthAvctpSvc start=demand
+sc config BDESVC start=demand >nul 2>&1
+sc config cbdhsvc start=demand
+sc config CDPSvc start=demand
+sc config CDPUserSvc start=demand
+sc config DevQueryBroker start=demand
+sc config DevicesFlowUserSvc start=demand
+sc config dmwappushservice start=demand
+sc config DispBrokerDesktopSvc start=demand
+sc config TrkWks start=demand
+sc config dLauncherLoopback start=demand >nul 2>&1
+sc config EFS start=demand
+sc config fdPHost start=demand
+sc config FDResPub start=demand
+sc config IKEEXT start=demand
+sc config NPSMSvc start=demand
+sc config WPDBusEnum start=demand
+sc config PcaSvc start=demand
+sc config RasMan start=demand
+sc config RetailDemo start=demand
+sc config SstpSvc start=demand
+sc config ShellHWDetection start=demand
+sc config SSDPSRV start=demand
+sc config SysMain start=demand
+sc config OneSyncSvc start=demand
+sc config lmhosts start=demand
+sc config UserDataSvc start=demand
+sc config UnistoreSvc start=demand
+sc config Wcmsvc start=demand
+sc config FontCache start=demand
+sc config W32Time start=demand
+sc config tzautoupdate start=demand
+sc config DsSvc start=demand
+sc config DevicesFlowUserSvc_5f1ad start=demand >nul 2>&1
+sc config diagsvc start=demand
+sc config DialogBlockingService start=demand >nul 2>&1
+sc config PimIndexMaintenanceSvc_5f1ad start=demand >nul 2>&1
+sc config MessagingService_5f1ad start=demand >nul 2>&1
+sc config AppVClient start=demand >nul 2>&1
+sc config MsKeyboardFilter start=demand >nul 2>&1
+sc config NetTcpPortSharing start=demand
+sc config ssh-agent start=demand
+sc config SstpSvc start=demand
+sc config OneSyncSvc_5f1ad start=demand >nul 2>&1
+sc config wercplsupport start=demand
+sc config WMPNetworkSvc start=demand >nul 2>&1
+sc config WerSvc start=demand
+sc config WpnUserService_5f1ad start=demand >nul 2>&1
+sc config WinHttpAutoProxySvc start=demand >nul 2>&1
 schtasks /DELETE /TN "AMDInstallLauncher" /f >nul 2>&1
 schtasks /DELETE /TN "AMDLinkUpdate" /f >nul 2>&1
 schtasks /DELETE /TN "AMDRyzenMasterSDKTask" /f >nul 2>&1
@@ -896,12 +896,12 @@ sc stop uhssvc >nul 2>&1
 sc stop UsoSvc >nul 2>&1
 sc stop wuauserv >nul 2>&1
 sc stop LanmanServer >nul 2>&1
-sc config BITS start= disabled
-sc config InstallService start= disabled
-sc config uhssvc start= disabled >nul 2>&1
-sc config UsoSvc start= disabled
-sc config wuauserv start= disabled
-sc config LanmanServer start= disabled
+sc config BITS start=demand
+sc config InstallService start=demand
+sc config uhssvc start=demand >nul 2>&1
+sc config UsoSvc start=demand
+sc config wuauserv start=demand
+sc config LanmanServer start=demand
 reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\DoSvc" /v Start /t reg_dword /d 4 /f
 reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\InstallService" /v Start /t reg_dword /d 4 /f
 reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\UsoSvc" /v Start /t reg_dword /d 4 /f
@@ -932,17 +932,17 @@ timeout 1 > nul
 cls
 color f
 echo.
-sc config RemoteRegistry start= disabled
-sc config RemoteAccess start= disabled
-sc config WinRM start= disabled
-sc config RmSvc start= disabled
+sc config RemoteRegistry start=demand
+sc config RemoteAccess start=demand
+sc config WinRM start=demand
+sc config RmSvc start=demand
 echo.
 timeout 1 > nul
 cls
 color f
 echo.
-sc config PrintNotify start= disabled
-sc config Spooler start= disabled
+sc config PrintNotify start=demand
+sc config Spooler start=demand
 schtasks /Change /TN "Microsoft\Windows\Printing\EduPrintProv" /Disable 
 schtasks /Change /TN "Microsoft\Windows\Printing\PrinterCleanupTask" /Disable 
 echo.
@@ -950,24 +950,24 @@ timeout 1 > nul
 cls
 color f
 echo.
-sc config BTAGService start= disabled
-sc config bthserv start= disabled
+sc config BTAGService start=demand
+sc config bthserv start=demand
 echo.
 echo.
 timeout 1 > nul
 cls
 color f
 echo.
-sc config NlaSvc start= disabled
-sc config LanmanWorkstation start= disabled
+sc config NlaSvc start=demand
+sc config LanmanWorkstation start=demand
 sc config BFE start= demand >nul 2>&1
 sc config Dnscache start= demand >nul 2>&1
 sc config WinHttpAutoProxySvc start= demand >nul 2>&1
 sc config Dhcp start= auto 
 sc config DPS start= auto 
-sc config lmhosts start= disabled
+sc config lmhosts start=demand
 sc config nsi start= auto
-sc config Wcmsvc start= disabled
+sc config Wcmsvc start=demand
 sc config Winmgmt start= auto
 sc config WlanSvc start= demand
 reg add "HKLM\Software\Policies\Microsoft\Windows\NetworkConnectivityStatusIndicator" /v "NoActiveProbe" /t REG_DWORD /d "1" /f
@@ -1000,92 +1000,92 @@ color f
 chcp 437 >nul
 echo.
 timeout 1 > nul
-sc config ALG start=disabled
-sc config AJRouter start=disabled
-sc config XblAuthManager start=disabled
-sc config XblGameSave start=disabled
-sc config XboxNetApiSvc start=disabled
-sc config WSearch start=disabled
-sc config lfsvc start=disabled
-sc config RemoteRegistry start=disabled
-sc config WpcMonSvc start=disabled
-sc config SEMgrSvc start=disabled
-sc config SCardSvr start=disabled
-sc config Netlogon start=disabled
-sc config CscService start=disabled >nul 2>&1 
-sc config icssvc start=disabled 
-sc config wisvc start=disabled 
-sc config RetailDemo start=disabled 
-sc config WalletService start=disabled 
-sc config Fax start=disabled >nul 2>&1 
-sc config WbioSrvc start=disabled 
-sc config iphlpsvc start=disabled 
-sc config wcncsvc start=disabled 
-sc config fhsvc start=disabled 
-sc config PhoneSvc start=disabled 
-sc config seclogon start=disabled 
-sc config FrameServer start=disabled 
-sc config WbioSrvc start=disabled 
-sc config StiSvc start=disabled 
-sc config PcaSvc start=disabled 
-sc config DPS start=disabled 
-sc config MapsBroker start=disabled 
-sc config bthserv start=disabled 
-sc config BDESVC start=disabled >nul 2>&1
-sc config BthAvctpSvc start=disabled 
-sc config WpcMonSvc start=disabled 
-sc config DiagTrack start=disabled 
-sc config CertPropSvc start=disabled 
-sc config WdiServiceHost start=disabled 
-sc config lmhosts start=disabled 
-sc config WdiSystemHost start=disabled 
-sc config TrkWks start=disabled 
-sc config WerSvc start=disabled 
-sc config TabletInputService start=disabled >nul 2>&1 
-sc config EntAppSvc start=disabled >nul 2>&1
-sc config Spooler start=disabled 
-sc config BcastDVRUserService start=disabled 
-sc config WMPNetworkSvc start=disabled >nul 2>&1
-sc config diagnosticshub.standardcollector.service start=disabled 
-sc config DmEnrollmentSvc start=disabled 
-sc config PNRPAutoReg start=disabled 
-sc config wlidsvc start=disabled 
-sc config AXInstSV start=disabled 
-sc config lfsvc start=disabled 
-sc config NcbService start=disabled 
-sc config DeviceAssociationService start=disabled
-sc config StorSvc start=disabled 
-sc config TieringEngineService start=disabled 
-sc config DPS start=disabled 
-sc config Themes start=disabled 
-sc config AppReadiness start=disabled 
+sc config ALG start=demand
+sc config AJRouter start=demand
+sc config XblAuthManager start=demand
+sc config XblGameSave start=demand
+sc config XboxNetApiSvc start=demand
+sc config WSearch start=demand
+sc config lfsvc start=demand
+sc config RemoteRegistry start=demand
+sc config WpcMonSvc start=demand
+sc config SEMgrSvc start=demand
+sc config SCardSvr start=demand
+sc config Netlogon start=demand
+sc config CscService start=demand >nul 2>&1 
+sc config icssvc start=demand 
+sc config wisvc start=demand 
+sc config RetailDemo start=demand 
+sc config WalletService start=demand 
+sc config Fax start=demand >nul 2>&1 
+sc config WbioSrvc start=demand 
+sc config iphlpsvc start=demand 
+sc config wcncsvc start=demand 
+sc config fhsvc start=demand 
+sc config PhoneSvc start=demand 
+sc config seclogon start=demand 
+sc config FrameServer start=demand 
+sc config WbioSrvc start=demand 
+sc config StiSvc start=demand 
+sc config PcaSvc start=demand 
+sc config DPS start=demand 
+sc config MapsBroker start=demand 
+sc config bthserv start=demand 
+sc config BDESVC start=demand >nul 2>&1
+sc config BthAvctpSvc start=demand 
+sc config WpcMonSvc start=demand 
+sc config DiagTrack start=demand 
+sc config CertPropSvc start=demand 
+sc config WdiServiceHost start=demand 
+sc config lmhosts start=demand 
+sc config WdiSystemHost start=demand 
+sc config TrkWks start=demand 
+sc config WerSvc start=demand 
+sc config TabletInputService start=demand >nul 2>&1 
+sc config EntAppSvc start=demand >nul 2>&1
+sc config Spooler start=demand 
+sc config BcastDVRUserService start=demand 
+sc config WMPNetworkSvc start=demand >nul 2>&1
+sc config diagnosticshub.standardcollector.service start=demand 
+sc config DmEnrollmentSvc start=demand 
+sc config PNRPAutoReg start=demand 
+sc config wlidsvc start=demand 
+sc config AXInstSV start=demand 
+sc config lfsvc start=demand 
+sc config NcbService start=demand 
+sc config DeviceAssociationService start=demand
+sc config StorSvc start=demand 
+sc config TieringEngineService start=demand 
+sc config DPS start=demand 
+sc config Themes start=demand 
+sc config AppReadiness start=demand 
 echo.
 timeout 1 > nul
 cls
 color f
 echo.
-sc config HvHost start=disabled 
-sc config vmickvpexchange start=disabled 
-sc config vmicguestinterface start=disabled 
-sc config vmicshutdown start=disabled 
-sc config vmicheartbeat start=disabled 
-sc config vmicvmsession start=disabled 
-sc config vmicrdv start=disabled 
-sc config vmictimesync start=disabled 
-sc config vmicvss start=disabled 
+sc config HvHost start=demand 
+sc config vmickvpexchange start=demand 
+sc config vmicguestinterface start=demand 
+sc config vmicshutdown start=demand 
+sc config vmicheartbeat start=demand 
+sc config vmicvmsession start=demand 
+sc config vmicrdv start=demand 
+sc config vmictimesync start=demand 
+sc config vmicvss start=demand 
 echo.
 timeout 1 > nul
 cls
 color f
 echo.
-sc config edgeupdate start=disabled >nul 2>&1
-sc config edgeupdatem start=disabled >nul 2>&1
-sc config GoogleChromeElevationService start=disabled >nul 2>&1
-sc config gupdate start=disabled >nul 2>&1
-sc config gupdatem start=disabled >nul 2>&1
-sc config BraveElevationService start=disabled >nul 2>&1
-sc config brave start=disabled >nul 2>&1
-sc config bravem start=disabled >nul 2>&1
+sc config edgeupdate start=demand >nul 2>&1
+sc config edgeupdatem start=demand >nul 2>&1
+sc config GoogleChromeElevationService start=demand >nul 2>&1
+sc config gupdate start=demand >nul 2>&1
+sc config gupdatem start=demand >nul 2>&1
+sc config BraveElevationService start=demand >nul 2>&1
+sc config brave start=demand >nul 2>&1
+sc config bravem start=demand >nul 2>&1
 :: Fake Success Output.
 echo 38 > "%TEMP%\valamv_progress.txt"
 echo.
@@ -1098,27 +1098,27 @@ cls
 color f
 echo.
 :: Intel Bloat.
-sc config NcbService start=disabled >nul 2>&1
-sc config jhi_service start=disabled >nul 2>&1
-sc config WMIRegistrationService start=disabled >nul 2>&1
-sc config "Intel(R) TPM Provisioning Service" start=disabled >nul 2>&1
-sc config "Intel(R) Platform License Manager Service" start=disabled >nul 2>&1
-sc config ipfsvc start=disabled >nul 2>&1
-sc config igccservice start=disabled >nul 2>&1
-sc config cplspcon start=disabled >nul 2>&1
-sc config esifsvc start=disabled >nul 2>&1
-sc config LMS start=disabled >nul 2>&1
-sc config ibtsiva start=disabled >nul 2>&1
-sc config IntelAudioService start=disabled >nul 2>&1
-sc config "Intel(R) Capability Licensing Service TCP IP Interface" start=disabled >nul 2>&1
-sc config cphs start=disabled >nul 2>&1
-sc config DSAService start=disabled >nul 2>&1
-sc config DSAUpdateService start=disabled >nul 2>&1
-sc config igfxCUIService2.0.0.0 start=disabled >nul 2>&1
-sc config RstMwService start=disabled >nul 2>&1
-sc config "Intel(R) SUR QC SAM" start=disabled >nul 2>&1
-sc config SystemUsageReportSvc_QUEENCREEK start=disabled >nul 2>&1
-sc config iaStorAfsService start=disabled >nul 2>&1
+sc config NcbService start=demand >nul 2>&1
+sc config jhi_service start=demand >nul 2>&1
+sc config WMIRegistrationService start=demand >nul 2>&1
+sc config "Intel(R) TPM Provisioning Service" start=demand >nul 2>&1
+sc config "Intel(R) Platform License Manager Service" start=demand >nul 2>&1
+sc config ipfsvc start=demand >nul 2>&1
+sc config igccservice start=demand >nul 2>&1
+sc config cplspcon start=demand >nul 2>&1
+sc config esifsvc start=demand >nul 2>&1
+sc config LMS start=demand >nul 2>&1
+sc config ibtsiva start=demand >nul 2>&1
+sc config IntelAudioService start=demand >nul 2>&1
+sc config "Intel(R) Capability Licensing Service TCP IP Interface" start=demand >nul 2>&1
+sc config cphs start=demand >nul 2>&1
+sc config DSAService start=demand >nul 2>&1
+sc config DSAUpdateService start=demand >nul 2>&1
+sc config igfxCUIService2.0.0.0 start=demand >nul 2>&1
+sc config RstMwService start=demand >nul 2>&1
+sc config "Intel(R) SUR QC SAM" start=demand >nul 2>&1
+sc config SystemUsageReportSvc_QUEENCREEK start=demand >nul 2>&1
+sc config iaStorAfsService start=demand >nul 2>&1
 :: AMD Bloat, NSudo needed to disable! | Disables unnecessary AMD services.
 echo 41 > "%TEMP%\valamv_progress.txt"
 "C:\valamv\NSudo\NSudoLG.exe" -ShowWindowMode:hide -U:T -P:E "C:\valamv\Amd\AMD.bat"
@@ -1137,20 +1137,20 @@ echo.
 :: Sound Bloat | NSudo needed to disable! | Deletes Realtek, Sound Research and VisiSonics bloat.
 "C:\valamv\NSudo\NSudoLG.exe" -ShowWindowMode:hide -U:T -P:E "C:\valamv\Sound\Sound.bat"
 :: HP Bloat.
-sc config HPAppHelperCap start=disabled >nul 2>&1
-sc config HPDiagsCap start=disabled >nul 2>&1
-sc config HpTouchpointAnalyticsService start=disabled >nul 2>&1
-sc config HPNetworkCap start=disabled >nul 2>&1
-sc config HPOmenCap start=disabled >nul 2>&1
-sc config HPSysInfoCap start=disabled >nul 2>&1
+sc config HPAppHelperCap start=demand >nul 2>&1
+sc config HPDiagsCap start=demand >nul 2>&1
+sc config HpTouchpointAnalyticsService start=demand >nul 2>&1
+sc config HPNetworkCap start=demand >nul 2>&1
+sc config HPOmenCap start=demand >nul 2>&1
+sc config HPSysInfoCap start=demand >nul 2>&1
 :: Gigabtye Bloat.
 taskkill /f /im spd.exe >nul 2>&1
 taskkill /f /im EasyTuneEngineService.exe >nul 2>&1
 taskkill /f /im GraphicsCardEngine.exe >nul 2>&1
 net stop "cFosSpeedS" >nul 2>&1
 net stop "GigabyteUpdateService" >nul 2>&1
-sc config cFosSpeedS start=disabled >nul 2>&1
-sc config GigabyteUpdateService start=disabled >nul 2>&1
+sc config cFosSpeedS start=demand >nul 2>&1
+sc config GigabyteUpdateService start=demand >nul 2>&1
 rd /s /q "C:\Program Files\cFosSpeed" >nul 2>&1
 rd /s /q "C:\Program Files\GIGABYTE\Control Center\Lib\GBT_VGA\Service" >nul 2>&1
 rd /s /q "C:\Program Files (x86)\Gigabyte\EasyTuneEngineService" >nul 2>&1
@@ -1161,15 +1161,15 @@ taskkill /f /im CCleanerBrowser.exe >nul 2>&1
 net stop "ccleaner" >nul 2>&1
 net stop "ccleanerm" >nul 2>&1
 net stop "CCleanerPerformanceOptimizerService" >nul 2>&1
-sc config ccleaner start=disabled >nul 2>&1
-sc config ccleanerm start=disabled >nul 2>&1
-sc config CCleanerPerformanceOptimizerService start=disabled >nul 2>&1
+sc config ccleaner start=demand >nul 2>&1
+sc config ccleanerm start=demand >nul 2>&1
+sc config CCleanerPerformanceOptimizerService start=demand >nul 2>&1
 rd /s /q "C:\Program Files\CCleaner" >nul 2>&1
 rd /s /q "C:\Program Files (x86)\CCleaner Browser" >nul 2>&1
 rd /s /q  "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\CCleaner" >nul 2>&1
 :: Logitech
 echo 44 > "%TEMP%\valamv_progress.txt"
-sc config logi_lamparray_service start=disabled >nul 2>&1
+sc config logi_lamparray_service start=demand >nul 2>&1
 :: Fake Success Output.
 echo.
 echo.
@@ -1858,9 +1858,9 @@ echo exit
 :: Creer Nvidia Container OFF.bat dans System32\ras
 (
 echo @echo off
-echo sc config NVDisplay.ContainerLocalSystem start=disabled ^>nul 2^>^&1
+echo sc config NVDisplay.ContainerLocalSystem start=demand ^>nul 2^>^&1
 echo sc stop NVDisplay.ContainerLocalSystem ^>nul 2^>^&1
-echo sc config NvContainerLocalSystem start=disabled ^>nul 2^>^&1
+echo sc config NvContainerLocalSystem start=demand ^>nul 2^>^&1
 echo sc stop NvContainerLocalSystem ^>nul 2^>^&1
 echo exit
 ) > "%SystemRoot%\System32\ras\Nvidia Container OFF.bat"
@@ -1870,11 +1870,11 @@ echo 59 > "%TEMP%\valamv_progress.txt"
 :: DESACTIVER SERVICES NVIDIA
 :: ============================================================
 
-sc config NVDisplay.ContainerLocalSystem start=disabled >nul 2>&1
+sc config NVDisplay.ContainerLocalSystem start=demand >nul 2>&1
 sc stop NVDisplay.ContainerLocalSystem >nul 2>&1
-sc config NvContainerLocalSystem start=disabled >nul 2>&1
+sc config NvContainerLocalSystem start=demand >nul 2>&1
 sc stop NvContainerLocalSystem >nul 2>&1
-sc config FvSVC start=disabled >nul 2>&1
+sc config FvSVC start=demand >nul 2>&1
 
 :: ============================================================
 :: TROUVER LE CHEMIN REGISTRE DU GPU NVIDIA
@@ -2260,9 +2260,9 @@ REG DELETE "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "NvBackend" /
 timeout 1 > nul
 cls
 
-sc config NVDisplay.ContainerLocalSystem start=disabled >nul 2>&1
-sc config NvContainerLocalSystem start=disabled >nul 2>&1
-sc config FvSVC start=disabled >nul 2>&1
+sc config NVDisplay.ContainerLocalSystem start=demand >nul 2>&1
+sc config NvContainerLocalSystem start=demand >nul 2>&1
+sc config FvSVC start=demand >nul 2>&1
 
 echo.
 echo.
@@ -2589,7 +2589,7 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" /v "Manu
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation" /v "SupportURL" /t REG_SZ /d "Discord:_valamv" /f >nul 2>&1
 
 :: --- UCPD Task Disable ---
-sc config "ucpd" start=disabled >nul 2>&1
+sc config "ucpd" start=demand >nul 2>&1
 schtasks /change /disable /tn "\Microsoft\Windows\AppxDeploymentClient\UCPD velocity" >nul 2>&1
 
 :: --- Tweaks directs (Gaming, Telemetrie, Bloatware, Audio, Clavier/Souris, Explorer, VBS, etc.) ---
@@ -2746,110 +2746,110 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\vwifimp" /v "Start" /t REG_DWORD
 
 :: --- Services Windows (Bluetooth, Hyper-V, lecteurs obsoletes, etc.) ---
 echo 80 > "%TEMP%\valamv_progress.txt"
-sc config "ucpd" start=disabled >nul 2>&1
-sc config AarSvc start=disabled >nul 2>&1
-sc config ADPSvc start=disabled >nul 2>&1
-sc config AppMgmt start=disabled >nul 2>&1
+sc config "ucpd" start=demand >nul 2>&1
+sc config AarSvc start=demand >nul 2>&1
+sc config ADPSvc start=demand >nul 2>&1
+sc config AppMgmt start=demand >nul 2>&1
 sc config AppInfo start=demand >nul 2>&1
-sc config AxInstSV start=disabled >nul 2>&1
-sc config BluetoothUserService start=disabled >nul 2>&1
-sc config CaptureService start=disabled >nul 2>&1
-sc config CloudBackupRestoreSvc start=disabled >nul 2>&1
-sc config cloudidsvc start=disabled >nul 2>&1
-sc config COMSysApp start=disabled >nul 2>&1
-sc config ConsentUxUserSvc start=disabled >nul 2>&1
-sc config dcsvc start=disabled >nul 2>&1
-sc config DeviceInstall start=disabled >nul 2>&1
-sc config DevicePickerUserSvc start=disabled >nul 2>&1
-sc config dot3svc start=disabled >nul 2>&1
-sc config DsmSvc start=disabled >nul 2>&1
-sc config Eaphost start=disabled >nul 2>&1
-sc config EventLog start=disabled >nul 2>&1
+sc config AxInstSV start=demand >nul 2>&1
+sc config BluetoothUserService start=demand >nul 2>&1
+sc config CaptureService start=demand >nul 2>&1
+sc config CloudBackupRestoreSvc start=demand >nul 2>&1
+sc config cloudidsvc start=demand >nul 2>&1
+sc config COMSysApp start=demand >nul 2>&1
+sc config ConsentUxUserSvc start=demand >nul 2>&1
+sc config dcsvc start=demand >nul 2>&1
+sc config DeviceInstall start=demand >nul 2>&1
+sc config DevicePickerUserSvc start=demand >nul 2>&1
+sc config dot3svc start=demand >nul 2>&1
+sc config DsmSvc start=demand >nul 2>&1
+sc config Eaphost start=demand >nul 2>&1
+sc config EventLog start=demand >nul 2>&1
 sc config EventSystem start=demand >nul 2>&1
-sc config FrameServerMonitor start=disabled >nul 2>&1
-sc config GameInputSvc start=disabled >nul 2>&1
-sc config GraphicsPerfSvc start=disabled >nul 2>&1
-sc config hpatchmon start=disabled >nul 2>&1
-sc config hidserv start=disabled >nul 2>&1
-sc config InventorySvc start=disabled >nul 2>&1
-sc config IpxlatCfgSvc start=disabled >nul 2>&1
-sc config KtmRm start=disabled >nul 2>&1
-sc config LocalKdc start=disabled >nul 2>&1
-sc config LicenseManager start=disabled >nul 2>&1
-sc config lltdsvc start=disabled >nul 2>&1
-sc config LxpSvc start=disabled >nul 2>&1
-sc config McpManagementService start=disabled >nul 2>&1
-sc config McmSvc start=disabled >nul 2>&1
-sc config MessagingService start=disabled >nul 2>&1
-sc config midisrv start=disabled >nul 2>&1
-sc config MSiSCSI start=disabled >nul 2>&1
-sc config NaturalAuthentication start=disabled >nul 2>&1
-sc config NcaSvc start=disabled >nul 2>&1
-sc config NcdAutoSetup start=disabled >nul 2>&1
-sc config Netman start=disabled >nul 2>&1
-sc config NetSetupSvc start=disabled >nul 2>&1
-sc config p2pimsvc start=disabled >nul 2>&1
-sc config p2psvc start=disabled >nul 2>&1
-sc config P9RdrService start=disabled >nul 2>&1
-sc config PeerDistSvc start=disabled >nul 2>&1
-sc config PenService start=disabled >nul 2>&1
-sc config perceptionsimulation start=disabled >nul 2>&1
-sc config PerfHost start=disabled >nul 2>&1
-sc config PimIndexMaintenanceSvc start=disabled >nul 2>&1
-sc config pla start=disabled >nul 2>&1
-sc config PNRPsvc start=disabled >nul 2>&1
-sc config PolicyAgent start=disabled >nul 2>&1
-sc config PrintDeviceConfigurationService start=disabled >nul 2>&1
-sc config PrintScanBrokerService start=disabled >nul 2>&1
-sc config PushToInstall start=disabled >nul 2>&1
-sc config QWAVE start=disabled >nul 2>&1
-sc config RasAuto start=disabled >nul 2>&1
-sc config refsdedupsvc start=disabled >nul 2>&1
-sc config RpcLocator start=disabled >nul 2>&1
-sc config SamSs start=disabled >nul 2>&1
-sc config ScDeviceEnum start=disabled >nul 2>&1
-sc config SCPolicySvc start=disabled >nul 2>&1
-sc config SDRSVC start=disabled >nul 2>&1
-sc config SENS start=disabled >nul 2>&1
-sc config Sense start=disabled >nul 2>&1
-sc config SharedRealitySvc start=disabled >nul 2>&1
-sc config SmsRouter start=disabled >nul 2>&1
-sc config SNMPTrap start=disabled >nul 2>&1
-sc config spectrum start=disabled >nul 2>&1
-sc config svsvc start=disabled >nul 2>&1
-sc config TroubleshootingSvc start=disabled >nul 2>&1
-sc config UmRdpService start=disabled >nul 2>&1
-sc config upnphost start=disabled >nul 2>&1
-sc config VacSvc start=disabled >nul 2>&1
-sc config VaultSvc start=disabled >nul 2>&1
-sc config vds start=disabled >nul 2>&1
-sc config WarpJITSvc start=disabled >nul 2>&1
-sc config wbengine start=disabled >nul 2>&1
-sc config webthreatdefusersvc start=disabled >nul 2>&1
-sc config webthreatdefsvc start=disabled >nul 2>&1
-sc config WEPHOSTSVC start=disabled >nul 2>&1
-sc config WFDSConMgrSvc start=disabled >nul 2>&1
-sc config whesvc start=disabled >nul 2>&1
-sc config WiaRpc start=disabled >nul 2>&1
-sc config WlanSvc start=disabled >nul 2>&1
-sc config wlpasvc start=disabled >nul 2>&1
-sc config WManSvc start=disabled >nul 2>&1
-sc config wmiApSrv start=disabled >nul 2>&1
-sc config workfolderssvc start=disabled >nul 2>&1
-sc config WpnUserService start=disabled >nul 2>&1
-sc config WpnService start=disabled >nul 2>&1
-sc config wuqisvc start=disabled >nul 2>&1
-sc config WSAIFabricSvc start=disabled >nul 2>&1
-sc config WwanSvc start=disabled >nul 2>&1
-sc config "!Svc!" start=disabled >nul 2>&1
-sc config "!Svc!" start=disabled >nul 2>&1
-sc config "!Svc!" start=disabled >nul 2>&1
-sc config RzActionSvc start=disabled >nul 2>&1
-sc config CortexLauncherService start=disabled >nul 2>&1
-sc config HapticService start=disabled >nul 2>&1
-sc config "!Svc!" start=disabled >nul 2>&1
-sc config LGHUBUpdaterService start=disabled >nul 2>&1
-sc config "!Svc!" start=disabled >nul 2>&1
+sc config FrameServerMonitor start=demand >nul 2>&1
+sc config GameInputSvc start=demand >nul 2>&1
+sc config GraphicsPerfSvc start=demand >nul 2>&1
+sc config hpatchmon start=demand >nul 2>&1
+sc config hidserv start=demand >nul 2>&1
+sc config InventorySvc start=demand >nul 2>&1
+sc config IpxlatCfgSvc start=demand >nul 2>&1
+sc config KtmRm start=demand >nul 2>&1
+sc config LocalKdc start=demand >nul 2>&1
+sc config LicenseManager start=demand >nul 2>&1
+sc config lltdsvc start=demand >nul 2>&1
+sc config LxpSvc start=demand >nul 2>&1
+sc config McpManagementService start=demand >nul 2>&1
+sc config McmSvc start=demand >nul 2>&1
+sc config MessagingService start=demand >nul 2>&1
+sc config midisrv start=demand >nul 2>&1
+sc config MSiSCSI start=demand >nul 2>&1
+sc config NaturalAuthentication start=demand >nul 2>&1
+sc config NcaSvc start=demand >nul 2>&1
+sc config NcdAutoSetup start=demand >nul 2>&1
+sc config Netman start=demand >nul 2>&1
+sc config NetSetupSvc start=demand >nul 2>&1
+sc config p2pimsvc start=demand >nul 2>&1
+sc config p2psvc start=demand >nul 2>&1
+sc config P9RdrService start=demand >nul 2>&1
+sc config PeerDistSvc start=demand >nul 2>&1
+sc config PenService start=demand >nul 2>&1
+sc config perceptionsimulation start=demand >nul 2>&1
+sc config PerfHost start=demand >nul 2>&1
+sc config PimIndexMaintenanceSvc start=demand >nul 2>&1
+sc config pla start=demand >nul 2>&1
+sc config PNRPsvc start=demand >nul 2>&1
+sc config PolicyAgent start=demand >nul 2>&1
+sc config PrintDeviceConfigurationService start=demand >nul 2>&1
+sc config PrintScanBrokerService start=demand >nul 2>&1
+sc config PushToInstall start=demand >nul 2>&1
+sc config QWAVE start=demand >nul 2>&1
+sc config RasAuto start=demand >nul 2>&1
+sc config refsdedupsvc start=demand >nul 2>&1
+sc config RpcLocator start=demand >nul 2>&1
+sc config SamSs start=demand >nul 2>&1
+sc config ScDeviceEnum start=demand >nul 2>&1
+sc config SCPolicySvc start=demand >nul 2>&1
+sc config SDRSVC start=demand >nul 2>&1
+sc config SENS start=demand >nul 2>&1
+sc config Sense start=demand >nul 2>&1
+sc config SharedRealitySvc start=demand >nul 2>&1
+sc config SmsRouter start=demand >nul 2>&1
+sc config SNMPTrap start=demand >nul 2>&1
+sc config spectrum start=demand >nul 2>&1
+sc config svsvc start=demand >nul 2>&1
+sc config TroubleshootingSvc start=demand >nul 2>&1
+sc config UmRdpService start=demand >nul 2>&1
+sc config upnphost start=demand >nul 2>&1
+sc config VacSvc start=demand >nul 2>&1
+sc config VaultSvc start=demand >nul 2>&1
+sc config vds start=demand >nul 2>&1
+sc config WarpJITSvc start=demand >nul 2>&1
+sc config wbengine start=demand >nul 2>&1
+sc config webthreatdefusersvc start=demand >nul 2>&1
+sc config webthreatdefsvc start=demand >nul 2>&1
+sc config WEPHOSTSVC start=demand >nul 2>&1
+sc config WFDSConMgrSvc start=demand >nul 2>&1
+sc config whesvc start=demand >nul 2>&1
+sc config WiaRpc start=demand >nul 2>&1
+sc config WlanSvc start=demand >nul 2>&1
+sc config wlpasvc start=demand >nul 2>&1
+sc config WManSvc start=demand >nul 2>&1
+sc config wmiApSrv start=demand >nul 2>&1
+sc config workfolderssvc start=demand >nul 2>&1
+sc config WpnUserService start=demand >nul 2>&1
+sc config WpnService start=demand >nul 2>&1
+sc config wuqisvc start=demand >nul 2>&1
+sc config WSAIFabricSvc start=demand >nul 2>&1
+sc config WwanSvc start=demand >nul 2>&1
+sc config "!Svc!" start=demand >nul 2>&1
+sc config "!Svc!" start=demand >nul 2>&1
+sc config "!Svc!" start=demand >nul 2>&1
+sc config RzActionSvc start=demand >nul 2>&1
+sc config CortexLauncherService start=demand >nul 2>&1
+sc config HapticService start=demand >nul 2>&1
+sc config "!Svc!" start=demand >nul 2>&1
+sc config LGHUBUpdaterService start=demand >nul 2>&1
+sc config "!Svc!" start=demand >nul 2>&1
 sc config "EpicGamesUpdater" start=auto >nul 2>&1
 sc config "EpicOnlineServices" start=auto >nul 2>&1
 
@@ -2943,7 +2943,7 @@ echo 86 > "%TEMP%\valamv_progress.txt"
 for /f "tokens=2 delims=:" %%S in ('sc query state^= all ^| findstr /i "SERVICE_NAME" ^| findstr /i "igfxCUIService"') do (
     set "Svc=%%S"
     set "Svc=!Svc:~1!"
-    sc config "!Svc!" start=disabled >nul 2>&1
+    sc config "!Svc!" start=demand >nul 2>&1
     echo "!Svc!" >nul 2>&1
 )
 :SettingPrioritySeparation
@@ -3863,7 +3863,7 @@ timeout 2 > nul
 exit /b 0
 
 :CleanupValmavDirs
-sc config TrustedInstaller start=disabled >nul 2>&1
+sc config TrustedInstaller start=demand >nul 2>&1
 rd /s /q "C:\valamv\Amd" >nul 2>&1
 rd /s /q "C:\valamv\Dcontrol" >nul 2>&1
 rd /s /q "C:\valamv\DnsJumper" >nul 2>&1
