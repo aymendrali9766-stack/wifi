@@ -205,5 +205,5 @@ reg add "HKCU\Software\AMD\CN\FreeSync" /v "AlreadyNotified" /t REG_DWORD /d "1"
 reg add "HKCU\Software\AMD\CN\OverlayNotification" /v "AlreadyNotified" /t REG_DWORD /d "1" /f >nul 2>&1
 reg add "HKCU\Software\AMD\CN\VirtualSuperResolution" /v "AlreadyNotified" /t REG_DWORD /d "1" /f >nul 2>&1
 
-pause
+
 exit /b
