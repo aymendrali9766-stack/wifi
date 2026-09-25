@@ -347,5 +347,5 @@ rd /s /q "%SystemDrive%\Program Files\NVIDIA Corporation\DisplayDriverRAS" >nul 
 rd /s /q "%SystemDrive%\ProgramData\NVIDIA Corporation\DisplayDriverRAS" >nul 2>&1
 
 endlocal
-pause
+
 exit /b
